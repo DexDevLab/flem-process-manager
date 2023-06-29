@@ -1,0 +1,52 @@
+{
+  "name": "flem-process-manager",
+  "description": "Aplicação utilizada pelo setor jurídico para organização de processos judiciais FLEM",
+  "version": "v0.1.0-230628",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "docs": "jsdoc --readme README.md -c jsdoc-config.json",
+    "prisma": "dotenv -e .env.local -- prisma",
+    "docker:build": "docker build . -t ghcr.io/frtechdev/flem-ppe-frontend:latest",
+    "docker:push": "docker push ghcr.io/frtechdev/flem-ppe-frontend:latest",
+    "caniuse": "npm update --save caniuse-lite browserslist",
+    "clean": "yarn autoclean --force",
+    "git:clear": "bash cleargitcache.sh",
+    "prisma:dbml": "yarn add prisma-dbml-generator --dev && yarn prisma generate && yarn remove prisma-dbml-generator --dev"
+  },
+  "dependencies": {
+    "@chakra-ui/icons": "^2.0.19",
+    "@chakra-ui/react": "^2.6.1",
+    "@emotion/react": "^11.11.0",
+    "@emotion/styled": "^11.11.0",
+    "@prisma/client": "4.14.0",
+    "axios": "^1.4.0",
+    "chakra-react-select": "^4.6.0",
+    "comigo-tech-react-input-mask": "^3.0.0-alpha.3",
+    "eslint": "8.39.0",
+    "eslint-config-next": "13.3.4",
+    "framer-motion": "^10.12.8",
+    "lodash": "^4.17.21",
+    "luxon": "^3.3.0",
+    "next": "^13.4.7",
+    "next-auth": "^4.22.1",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-dropzone": "^14.2.3",
+    "react-hook-form": "^7.43.9",
+    "react-icons": "^4.8.0",
+    "react-number-format": "^5.2.1",
+    "react-spinners": "^0.13.8",
+    "react-table": "^7.8.0"
+  },
+  "devDependencies": {
+    "clean-jsdoc-theme": "^4.2.9",
+    "dotenv-cli": "^7.2.1",
+    "eslint-plugin-react-hooks": "^4.7.0-next-3d443cad7-20220823",
+    "jsdoc": "^4.0.2",
+    "prisma": "^4.14.0"
+  }
+}

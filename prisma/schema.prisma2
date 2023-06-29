@@ -1,0 +1,2661 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+  schemas  = ["bdcolaborador].[dbo","BDControleProcesso].[dbo"]
+}
+
+model aprInscricao {
+  idt_inscricao_apr   Int       @id(clustered: false, map: "PK_aprInscricao") @default(autoincrement())
+  idt_turma_apr       Int?      @default(0, map: "DF_aprInscricao_idt_turma_apr")
+  idt_colab           Int?      @default(0, map: "DF_aprInscricao_idt_colab")
+  idt_colab_inscricao Int?      @default(0, map: "DF_aprInscricao_idt_colab_inscricao")
+  dat_inscricao_apr   DateTime? @default(now(), map: "DF_aprInscricao_dat_inscricao_apr") @db.SmallDateTime
+  flg_participacao    Boolean   @default(true, map: "DF_aprInscricao_flg_participacao")
+  aprTurma            aprTurma? @relation(fields: [idt_turma_apr], references: [idt_turma_apr], onDelete: NoAction, onUpdate: NoAction, map: "FK_aprInscricao_aprTurma")
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model aprTema {
+  idt_tema_apr    Int        @id(clustered: false, map: "PK_aprTema") @default(autoincrement())
+  des_tema_apr    String?    @db.VarChar(50)
+  hrs_duracao_apr DateTime?  @db.DateTime
+  flg_exibe_tema  Boolean?   @default(false, map: "DF_aprTema_flg_exibe_tema")
+  aprTurma        aprTurma[]
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model aprTurma {
+  idt_turma_apr          Int            @id(clustered: false, map: "PK_aprTurma") @default(autoincrement())
+  idt_tema_apr           Int?           @default(0, map: "DF_aprTurma_idt_tema_apr")
+  des_turma_apr          String?        @db.VarChar(50)
+  dat_turma_apr          DateTime?      @db.DateTime
+  hrs_turma_apr          DateTime?      @db.DateTime
+  des_local_apr          String?        @db.VarChar(50)
+  flg_bloqueio_inscricao Boolean?       @default(false, map: "DF_aprTurma_flg_bloqueio_inscricao")
+  aprInscricao           aprInscricao[]
+  aprTema                aprTema?       @relation(fields: [idt_tema_apr], references: [idt_tema_apr], onDelete: NoAction, onUpdate: NoAction, map: "FK_aprTurma_aprTema")
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model Colaborador {
+  idt_colab             Int       @id(map: "PK_Colaborador")
+  nom_colab             String?   @db.VarChar(50)
+  nom_curto_colab       String?   @db.VarChar(50)
+  nom_email             String?   @db.VarChar(200)
+  nom_colab_especial    String?   @db.VarChar(50)
+  nom_primeiro          String?   @db.VarChar(20)
+  nom_primeiro_especial String?   @db.VarChar(20)
+  nom_username          String?   @db.VarChar(20)
+  idt_setor             Int?      @default(0, map: "DF_Colaborador_idt_setor")
+  idt_dept              Int?      @default(0, map: "DF_Colaborador_idt_dept")
+  idt_dept_ant          Int?      @default(0, map: "DF_Colaborador_idt_dept_ant")
+  des_placa             String?   @db.VarChar(30)
+  des_ramais            String?   @db.VarChar(20)
+  dat_nasc              DateTime? @db.DateTime
+  cod_matricula         String?   @db.VarChar(10)
+  cod_rg                String?   @db.VarChar(25)
+  idt_sexo              Int?      @default(0, map: "DF_Colaborador_idt_sexo")
+  idt_estcivil          Int?      @default(0, map: "DF_Colaborador_idt_estcivil")
+  cod_cpf               String?   @db.VarChar(14)
+  cod_banco             String?   @db.VarChar(3)
+  cod_num_agencia       String?   @db.VarChar(5)
+  cod_dig_agencia       String?   @db.VarChar(1)
+  cod_num_contac        String?   @db.VarChar(15)
+  cod_dig_contac        String?   @db.VarChar(1)
+  idt_endereco          Int?      @default(0, map: "DF_Colaborador_idt_endereco")
+  dat_admissao          DateTime? @db.DateTime
+  dat_casamento         DateTime? @db.DateTime
+  idt_cargo             Int?      @default(0, map: "DF_Colaborador_idt_cargo")
+  idt_cargo_ant         Int?      @default(0, map: "DF_Colaborador_idt_cargo_ant")
+  flg_planserv          Boolean?  @default(false, map: "DF_Colaborador_flg_planserv")
+  dat_opcao_planserv    DateTime? @db.DateTime
+  idt_plano_planserv    Int?      @default(0, map: "DF_Colaborador_idt_plano_planserv")
+  idt_titular           Int?      @default(0, map: "DF_Colaborador_idt_titular")
+  flg_exclusao          Boolean?  @default(false, map: "DF_Colaborador_flg_exclusao")
+  Num_empresa_planserv  String?   @db.VarChar(5)
+  nom_foto              String?   @db.VarChar(50)
+  dat_inclusao_colab    DateTime? @default(now(), map: "DF_Colaborador_dat_inclusao_colab") @db.SmallDateTime
+  nom_colab_alter       String?   @db.VarChar(50)
+  exibe_aniversario     Int?      @default(1, map: "DF_Colaborador_exibe_aniversario") @db.TinyInt
+  cod_dominio           Int?
+
+  @@index([cod_matricula], map: "idx_matricula")
+  @@index([exibe_aniversario], map: "ix_exibe_aniversario_Includes")
+  @@schema("bdcolaborador].[dbo")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model colCursoFormacao {
+  idt_curso_superior Int     @default(autoincrement())
+  nom_curso_superior String? @db.VarChar(50)
+
+  @@ignore
+  @@schema("bdcolaborador].[dbo")
+}
+
+model colGrauInstrucao {
+  idt_grau_instrucao Int     @id(clustered: false, map: "PK_colGrauInstrucao") @default(autoincrement())
+  des_grau_instrucao String? @db.VarChar(20)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model colProntuario {
+  idt_prontuario     Int       @id(clustered: false, map: "PK_colProntuario") @default(autoincrement())
+  idt_colab          Int?      @default(0, map: "DF_colProntuario_idt_colab")
+  dat_prontuario     DateTime? @db.SmallDateTime
+  idt_tip_prontuario Int?      @default(0, map: "DF_colProntuario_idt_tip_prontuario")
+  des_prontuario     String?   @db.NVarChar(80)
+  nom_imagem         String?   @db.NVarChar(50)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model colTipo_Prontuario {
+  idt_tip_prontuario Int     @id(clustered: false, map: "PK_colTipo_Prontuario") @default(autoincrement())
+  nom_tip_prontuario String? @db.NVarChar(50)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model Dependentes {
+  Idt_Depend           Int       @id(clustered: false, map: "PK_Dependentes") @default(autoincrement())
+  Num_empresa          String?   @db.NVarChar(5)
+  Idt_Titular          Int?      @default(0, map: "DF_Dependentes_Idt_Titular")
+  Num_RDP              Int?      @db.TinyInt
+  Nom_Depend           String?   @db.NVarChar(255)
+  Tip_Depend           Int?
+  Dat_Nasc_Depend      DateTime? @db.SmallDateTime
+  Tip_Sexo_Depend      String?   @db.NVarChar(50)
+  Tip_EstCivil_Depend  String?   @db.NVarChar(255)
+  Dat_Casamento_Depend DateTime? @db.SmallDateTime
+  tip_processado       Boolean   @default(false, map: "DF_Dependentes_tip_processado")
+  tip_alteracao        Boolean   @default(false, map: "DF_Dependentes_tip_alteracao")
+  flg_exclusao         Boolean   @default(false, map: "DF_Dependentes_flg_exclusao")
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model desCntNumSolicDespesa {
+  num_ano      Int    @default(3, map: "DF_desCntNumSolicDespesa_num_ano") @db.SmallInt
+  num_mes      Int    @default(0, map: "DF_desCntNumSolicDespesa_num_mes") @db.SmallInt
+  cod_mes      String @default("A", map: "DF_desCntNumSolicDespesa_cod_mes") @db.Char(1)
+  num_dia      Int    @default(1, map: "DF_desCntNumSolicDespesa_num_dia") @db.TinyInt
+  num_controle Int    @default(0, map: "DF_desCntNumSolicDespesa_num_controle") @db.SmallInt
+
+  @@id([num_ano, num_mes, num_dia], map: "PK_desCntNumSolicDespesa_1", clustered: false)
+  @@schema("bdcolaborador].[dbo")
+}
+
+model desRespCCustoOLD {
+  idt_resp   Int    @id(clustered: false, map: "PK_desRespCCusto") @default(autoincrement())
+  idt_colab  Int
+  cod_ccusto String @db.VarChar(9)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model desRespDepartamentoOLD {
+  idt_resp  Int    @default(autoincrement())
+  idt_colab Int
+  idt_dept  String @db.VarChar(9)
+
+  @@ignore
+  @@schema("bdcolaborador].[dbo")
+}
+
+model desSolicDespesa {
+  idt_solic             Int                      @id(clustered: false, map: "PK_desSolicDespesa") @default(autoincrement())
+  dat_solic             DateTime                 @default(now(), map: "DF_desSolicDespesa_dat_solic") @db.SmallDateTime
+  num_solic             String                   @default("0", map: "DF_desSolicDespesa_num_solic") @db.Char(8)
+  idt_solicitante       Int
+  idt_dept_solicitante  Int                      @default(0, map: "DF_desSolicDespesa_idt_dept_solicitante")
+  des_referencia        String?                  @db.VarChar(90)
+  idt_ccusto            Int?
+  cod_ccusto            String?                  @db.VarChar(12)
+  idt_cresp             Int
+  cod_cresp             String?                  @db.Char(4)
+  idt_destinatario      Int
+  idt_dept_destinatario Int                      @default(0, map: "DF_desSolicDespesa_idt_dept_destinatario")
+  des_solic             String                   @db.VarChar(8000)
+  dat_objeto            DateTime?                @db.SmallDateTime
+  dat_pagto             DateTime?                @db.SmallDateTime
+  flg_status            Int                      @default(1, map: "DF_desSolicDespesa_flg_status") @db.TinyInt
+  idt_ultalteracao      Int
+  dat_ultalteracao      DateTime                 @default(now(), map: "DF_desSolicDespesa_dat_inclusao") @db.SmallDateTime
+  cod_timestamp         Unsupported("timestamp")
+  tipo_solicitacao      Int?                     @db.TinyInt
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model desSolicDespesaAnexo {
+  idt_anexo Int    @id(clustered: false, map: "PK_desSolicDespesaAnexo") @default(autoincrement())
+  idt_solic Int
+  des_anexo String @db.VarChar(300)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model desSolicDespesaItens {
+  idt_item   Int    @id(clustered: false, map: "PK_desSolicDespesaItens") @default(autoincrement())
+  idt_solic  Int
+  num_item   Int    @default(1, map: "DF_desSolicDespesaItens_num_itsolic") @db.TinyInt
+  des_item   String @db.VarChar(1000)
+  val_item   String @db.Char(15)
+  idt_eldesp String @db.VarChar(20)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model desStatusSolicDespesa {
+  idt_status         Int     @id(clustered: false, map: "PK_desStatusSolicDespesa") @db.SmallInt
+  nom_status         String  @db.Char(25)
+  nom_arquivo_status String? @db.VarChar(100)
+  des_status         String? @db.VarChar(60)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model docCI {
+  idt_ci                  Int     @id(clustered: false, map: "PK_docCI") @default(autoincrement())
+  cod_setor               String? @db.NVarChar(15)
+  num_ci                  Int?    @db.SmallInt
+  ano_ci                  Int?    @db.SmallInt
+  des_assunto_original    String? @db.NVarChar(100)
+  nom_de_original         String? @db.NVarChar(50)
+  nom_para_original       String? @db.NVarChar(50)
+  nom_setor_de_original   String? @db.NVarChar(50)
+  nom_setor_para_original String? @db.NVarChar(50)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model docNumeracaoCI {
+  num_ci    Int     @id(clustered: false, map: "PK_docNumeracaoCI") @default(autoincrement())
+  ano_ci    Int?    @db.SmallInt
+  cod_setor String? @db.NVarChar(15)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model ehrColaboradorAtualizacao {
+  idt_funcionario            Int                       @id(clustered: false, map: "PK_ehrColaboradorAtualizacao") @default(autoincrement())
+  num_matricula              Int?
+  nom_func                   String?                   @db.VarChar(60)
+  nom_abrev_func             String?                   @db.VarChar(30)
+  des_end                    String?                   @db.VarChar(30)
+  des_compl_end              String?                   @db.VarChar(30)
+  des_bairo                  String?                   @db.VarChar(30)
+  num_cep                    String?                   @db.Char(8)
+  idt_cidade                 Int?
+  cod_uf                     String?                   @db.Char(2)
+  num_telefone               String?                   @db.Char(12)
+  num_celular                String?                   @db.Char(12)
+  dat_nascimento             DateTime?                 @db.SmallDateTime
+  nom_cidade_nasc            String?                   @db.VarChar(30)
+  cod_uf_nasc                String?                   @db.Char(2)
+  nom_pais_nasc              String?                   @db.VarChar(30)
+  idt_sexo                   Int?
+  idt_estcivil               Int?
+  idt_grau_instrucao         Int?
+  idt_nacionalidade          Int?
+  idt_raca_cor               Int?
+  idt_situacao_militar       Int?
+  nom_pai                    String?                   @db.VarChar(30)
+  nom_mae                    String?                   @db.VarChar(30)
+  des_estatura               String?                   @db.Char(10)
+  flg_deficiente_fisico      Int?                      @db.TinyInt
+  nom_cracha                 String?                   @db.Char(20)
+  idt_tipo_sangue            Int?                      @db.SmallInt
+  idt_fator_rh               Int?                      @db.SmallInt
+  num_rg                     String?                   @db.VarChar(15)
+  des_orgao_emissor          String?                   @db.VarChar(5)
+  cod_uf_orgao_emissor       String?                   @db.Char(2)
+  dat_emissao_rg             DateTime?                 @db.SmallDateTime
+  num_cart_trabalho          String?                   @db.VarChar(7)
+  des_serie_cart_trab        String?                   @db.VarChar(5)
+  cod_uf_cart_trab           String?                   @db.VarChar(2)
+  dat_exp_cart_trab          DateTime?                 @db.SmallDateTime
+  num_CPF                    String?                   @db.VarChar(11)
+  num_tit_eleitor            String?                   @db.VarChar(12)
+  num_zona                   String?                   @db.VarChar(3)
+  num_secao                  String?                   @db.VarChar(4)
+  num_cart_prof              String?                   @db.VarChar(11)
+  des_orgao_cart_prof        String?                   @db.VarChar(5)
+  cod_regiao_cart_prof       String?                   @db.VarChar(2)
+  num_cart_reservista        String?                   @db.VarChar(14)
+  num_serie_cart_reservista  String?                   @db.VarChar(3)
+  cod_regiao_cart_reservista String?                   @db.VarChar(2)
+  num_cart_motorista         String?                   @db.VarChar(10)
+  cod_categoriaCM            String?                   @db.VarChar(3)
+  dat_valCM                  DateTime?                 @db.SmallDateTime
+  flg_emprego_anterior       Int?                      @db.TinyInt
+  ano_primeiro_emprego       String?                   @db.VarChar(4)
+  num_pis_pasep              String?                   @db.VarChar(11)
+  flg_pgto_pis_pasep         Int?                      @db.TinyInt
+  dat_cadastro_pis_pasep     DateTime?                 @db.SmallDateTime
+  dat_opcao_fgts             DateTime?                 @db.SmallDateTime
+  cod_opcao_fgts             String?                   @db.Char(1)
+  nom_conjuge                String?                   @db.VarChar(30)
+  nom_email                  String?                   @db.VarChar(36)
+  num_ramal1                 String?                   @db.VarChar(12)
+  num_fax                    String?                   @db.VarChar(12)
+  nom_curto_func             String?                   @db.VarChar(25)
+  nom_username               String?                   @db.VarChar(20)
+  des_placa                  String?                   @db.VarChar(20)
+  num_ramal2                 String?                   @db.VarChar(12)
+  dat_casamento              DateTime?                 @db.SmallDateTime
+  cod_banco                  String?                   @db.VarChar(3)
+  num_agencia                String?                   @db.VarChar(6)
+  num_conta                  String?                   @db.VarChar(12)
+  dat_ult_atualizacao        Unsupported("timestamp")?
+  flg_atualizacao            Int?                      @db.TinyInt
+  flg_ok                     Int?                      @default(0, map: "DF_ehrColaboradorAtualizacao_flg_ok") @db.TinyInt
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model ehrColaboradorAtualizacaoV20030130 {
+  idt_funcionario            Int       @id(clustered: false, map: "PK_erpColaboradorAtualizacao") @default(autoincrement())
+  num_matricula              Int?
+  nom_func                   String?   @db.VarChar(60)
+  nom_abrev_func             String?   @db.VarChar(30)
+  des_end                    String?   @db.VarChar(30)
+  des_compl_end              String?   @db.VarChar(30)
+  des_bairo                  String?   @db.VarChar(30)
+  num_cep                    String?   @db.Char(8)
+  idt_cidade                 Int?
+  cod_uf                     String?   @db.Char(2)
+  num_telefone               String?   @db.Char(12)
+  num_celular                String?   @db.Char(12)
+  dat_nascimento             DateTime? @db.SmallDateTime
+  nom_cidade_nasc            String?   @db.VarChar(30)
+  cod_uf_nasc                String?   @db.Char(2)
+  nom_pais_nasc              String?   @db.VarChar(30)
+  idt_sexo                   Int?
+  idt_estcivil               Int?
+  idt_grau_instrucao         Int?
+  idt_nacionalidade          Int?
+  idt_raca_cor               Int?
+  idt_situacao_militar       Int?
+  nom_pai                    String?   @db.VarChar(30)
+  nom_mae                    String?   @db.VarChar(30)
+  des_estatura               String?   @db.Char(10)
+  flg_deficiente_fisico      Int?      @db.TinyInt
+  nom_cracha                 String?   @db.Char(20)
+  idt_tipo_sangue            Int?      @db.SmallInt
+  idt_fator_rh               Int?      @db.SmallInt
+  num_rg                     String?   @db.VarChar(15)
+  des_orgao_emissor          String?   @db.VarChar(5)
+  cod_uf_orgao_emissor       String?   @db.Char(2)
+  dat_emissao_rg             DateTime? @db.SmallDateTime
+  num_cart_trabalho          String?   @db.VarChar(7)
+  des_serie_cart_trab        String?   @db.VarChar(5)
+  cod_uf_cart_trab           String?   @db.VarChar(2)
+  dat_exp_cart_trab          DateTime? @db.SmallDateTime
+  num_CPF                    String?   @db.VarChar(11)
+  num_tit_eleitor            String?   @db.VarChar(12)
+  num_zona                   String?   @db.VarChar(3)
+  num_secao                  String?   @db.VarChar(4)
+  num_cart_prof              String?   @db.VarChar(11)
+  des_orgao_cart_prof        String?   @db.VarChar(5)
+  cod_regiao_cart_prof       String?   @db.VarChar(2)
+  num_cart_reservista        String?   @db.VarChar(14)
+  num_serie_cart_reservista  String?   @db.VarChar(3)
+  cod_regiao_cart_reservista String?   @db.VarChar(2)
+  num_cart_motorista         String?   @db.VarChar(10)
+  cod_categoriaCM            String?   @db.VarChar(3)
+  dat_valCM                  DateTime? @db.SmallDateTime
+  flg_emprego_anterior       Int?      @db.TinyInt
+  ano_primeiro_emprego       String?   @db.VarChar(4)
+  num_pis_pasep              String?   @db.VarChar(11)
+  flg_pgto_pis_pasep         Int?      @db.TinyInt
+  dat_cadastro_pis_pasep     DateTime? @db.SmallDateTime
+  dat_opcao_fgts             DateTime? @db.SmallDateTime
+  cod_opcao_fgts             String?   @db.Char(1)
+  nom_conjuge                String?   @db.VarChar(30)
+  nom_email                  String?   @db.VarChar(36)
+  num_ramal1                 String?   @db.VarChar(12)
+  num_fax                    String?   @db.VarChar(12)
+  nom_curto_func             String?   @db.VarChar(25)
+  nom_username               String?   @db.VarChar(20)
+  des_placa                  String?   @db.VarChar(20)
+  num_ramal2                 String?   @db.VarChar(12)
+  dat_casamento              DateTime? @db.SmallDateTime
+  cod_matricula_num          Int?
+  cod_banco                  String?   @db.VarChar(3)
+  num_agencia                String?   @db.VarChar(6)
+  num_conta                  String?   @db.VarChar(12)
+  idt_colab                  Int?
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model ehrDependentes {
+  idt_depend          Int       @id(clustered: false, map: "PK_erpDependente") @default(autoincrement())
+  num_matricula       Int?
+  nom_depend          String    @db.VarChar(50)
+  idt_sexo            Int       @default(0, map: "DF_erpDependente_idt_sexo")
+  dat_nasc            DateTime? @db.SmallDateTime
+  idt_grau_parentesco Int       @default(0, map: "DF_erpDependente_idt_garup")
+  idt_depend_ir       Int       @default(0, map: "DF_erpDependente_idt_depend_ir")
+  idt_estcivil        Int       @default(0, map: "DF_erpDependente_idt_estcivil")
+  idt_grauinst        Int       @default(0, map: "DF_erpDependente_idt_grauinst")
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model ehrFolhaControle {
+  idt_folha         Int       @id(map: "PK_ehrFolhaControle") @default(autoincrement())
+  des_folha         String?   @db.VarChar(20)
+  dat_credito_folha DateTime? @db.SmallDateTime
+  dat_ref_folha     DateTime? @db.SmallDateTime
+  flg_publica_des   Boolean?
+  flg_publica_prd   Boolean?
+  tip_calculo       Int?      @db.SmallInt
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model ehrFolhaControleDept {
+  idt_folha_dept  Int     @id(map: "PK_ehrFolhaControleDept") @default(autoincrement())
+  idt_folha       Int
+  idt_dept        Int
+  flg_publica_prd Boolean @default(false, map: "DF_ehrFolhaControleDept_flg_publica_prd")
+  flg_publica_des Boolean
+  flg_publica     Int?    @default(0, map: "DF_ehrFolhaControleDept_flg_publica")
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model ehrFolhaMensagem {
+  mes_folha String @id(clustered: false, map: "PK_ehrFolhaMensagem") @db.VarChar(6)
+  des_msg   String @db.VarChar(4000)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model ehrTesteCargaColaborador {
+  idt_funcionario            Int       @id(clustered: false, map: "PK_ehrTesteCargaColaboradorAtualizacao") @default(autoincrement())
+  num_matricula              String?   @db.VarChar(50)
+  nom_func                   String?   @db.VarChar(60)
+  nom_abrev_func             String?   @db.VarChar(30)
+  des_end                    String?   @db.VarChar(30)
+  des_compl_end              String?   @db.VarChar(30)
+  des_bairo                  String?   @db.VarChar(30)
+  num_cep                    String?   @db.Char(8)
+  idt_cidade                 Int?
+  cod_uf                     String?   @db.Char(2)
+  num_telefone               String?   @db.Char(12)
+  num_celular                String?   @db.Char(12)
+  dat_nascimento             DateTime? @db.SmallDateTime
+  nom_cidade_nasc            String?   @db.VarChar(30)
+  cod_uf_nasc                String?   @db.Char(2)
+  nom_pais_nasc              String?   @db.VarChar(30)
+  idt_sexo                   Int?
+  idt_estcivil               Int?
+  idt_grau_instrucao         Int?
+  idt_nacionalidade          Int?
+  idt_raca_cor               Int?
+  idt_situacao_militar       Int?
+  nom_pai                    String?   @db.VarChar(30)
+  nom_mae                    String?   @db.VarChar(30)
+  des_estatura               String?   @db.Char(10)
+  flg_deficiente_fisico      Int?      @db.TinyInt
+  nom_cracha                 String?   @db.Char(20)
+  idt_tipo_sangue            Int?      @db.SmallInt
+  idt_fator_rh               Int?      @db.SmallInt
+  num_rg                     String?   @db.VarChar(15)
+  des_orgao_emissor          String?   @db.VarChar(5)
+  cod_uf_orgao_emissor       String?   @db.Char(2)
+  dat_emissao_rg             DateTime? @db.SmallDateTime
+  num_cart_trabalho          String?   @db.VarChar(7)
+  des_serie_cart_trab        String?   @db.VarChar(5)
+  cod_uf_cart_trab           String?   @db.VarChar(2)
+  dat_exp_cart_trab          DateTime? @db.SmallDateTime
+  num_CPF                    String?   @db.VarChar(11)
+  num_tit_eleitor            String?   @db.VarChar(12)
+  num_zona                   String?   @db.VarChar(3)
+  num_secao                  String?   @db.VarChar(4)
+  num_cart_prof              String?   @db.VarChar(11)
+  des_orgao_cart_prof        String?   @db.VarChar(5)
+  cod_regiao_cart_prof       String?   @db.VarChar(2)
+  num_cart_reservista        String?   @db.VarChar(14)
+  num_serie_cart_reservista  String?   @db.VarChar(3)
+  cod_regiao_cart_reservista String?   @db.VarChar(2)
+  num_cart_motorista         String?   @db.VarChar(10)
+  cod_categoriaCM            String?   @db.VarChar(3)
+  dat_valCM                  DateTime? @db.SmallDateTime
+  flg_emprego_anterior       Int?      @db.TinyInt
+  ano_primeiro_emprego       String?   @db.VarChar(4)
+  num_pis_pasep              String?   @db.VarChar(11)
+  flg_pgto_pis_pasep         Int?      @db.TinyInt
+  dat_cadastro_pis_pasep     DateTime? @db.SmallDateTime
+  dat_opcao_fgts             DateTime? @db.SmallDateTime
+  cod_opcao_fgts             String?   @db.Char(1)
+  nom_conjuge                String?   @db.VarChar(30)
+  nom_email                  String?   @db.VarChar(36)
+  num_ramal1                 String?   @db.VarChar(12)
+  num_fax                    String?   @db.VarChar(12)
+  nom_curto_func             String?   @db.VarChar(25)
+  nom_username               String?   @db.VarChar(20)
+  des_placa                  String?   @db.VarChar(20)
+  num_ramal2                 String?   @db.VarChar(12)
+  dat_casamento              DateTime? @db.SmallDateTime
+  cod_matricula_num          Int?
+  cod_banco                  String?   @db.VarChar(3)
+  num_agencia                String?   @db.VarChar(6)
+  num_conta                  String?   @db.VarChar(12)
+  idt_colab                  Int?
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model Endereco {
+  idt_ender       Int     @id(clustered: false, map: "PK_Endereco") @default(autoincrement())
+  tip_ender       String? @default("0", map: "DF_Endereco_tip_ender") @db.NVarChar(1)
+  nom_logra_ender String? @db.NVarChar(55)
+  des_num_ender   String? @db.NVarChar(6)
+  nom_edif_ender  String? @db.NVarChar(35)
+  des_sala_ender  String? @db.NVarChar(10)
+  des_bloco_ender String? @db.NVarChar(5)
+  nom_bairro      String? @db.NVarChar(25)
+  cep_ender       String? @db.NVarChar(8)
+  des_compl_ender String? @db.NVarChar(255)
+  idt_cidade      Int?    @default(0, map: "DF_Endereco_idt_cidade")
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model eveEspaco {
+  idt_espaco                Int                @id(map: "PK_eveEspaco") @default(autoincrement())
+  nom_espaco                String?            @db.VarChar(15)
+  des_espaco                String?            @db.VarChar(7000)
+  idt_ant_espaco            Int
+  nom_ant_espaco            String?            @db.VarChar(15)
+  nom_arquivo_imagem        String?            @db.VarChar(30)
+  num_posicao               Int?               @db.TinyInt
+  nom_arquivo_imagem_quadro String?            @db.VarChar(30)
+  flg_ativo                 Boolean?
+  eveReservaEspaco          eveReservaEspaco[]
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model eveEvento {
+  idt_evento          Int
+  nom_evento          String?   @db.VarChar(80)
+  idt_tipo_assunto    Int?
+  idt_assunto         Int?
+  nom_instituicao     String?   @db.VarChar(80)
+  nom_responsavel     String?   @db.VarChar(50)
+  num_telResponsavel  String?   @db.VarChar(50)
+  nom_responsavel2    String?   @db.VarChar(50)
+  num_telResponsavel2 String?   @db.VarChar(50)
+  nom_tema            String?   @db.VarChar(255)
+  desc_perfil         String?   @db.VarChar(5000)
+  num_vagas           Int?
+  num_vagasFLEM       Int?
+  tip_prioridade      Int?      @db.TinyInt
+  dat_inicio          DateTime? @db.SmallDateTime
+  dat_fim             DateTime? @db.SmallDateTime
+  nom_arquivo_html    String?   @db.VarChar(50)
+  flg_Gabinete        Boolean
+  flg_Publico         Boolean
+  flg_Apoio           Boolean
+  flg_LogFLEM         Boolean
+  flg_DispInternet    Boolean
+  flg_Autoridade      Boolean
+  des_url_evento      String?   @db.VarChar(100)
+  des_detalhe         String?   @db.VarChar(7000)
+
+  @@ignore
+  @@schema("bdcolaborador].[dbo")
+}
+
+model eveHora {
+  idt_hora Int     @id(map: "PK_eveHora")
+  des_hora String? @db.VarChar(5)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model eveMensagem {
+  idt_mensagem Int     @id(map: "PK_eveMensagem") @default(autoincrement())
+  des_mensagem String? @db.VarChar(300)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model Evento {
+  idt_evento          Int
+  nom_evento          String? @db.NVarChar(80)
+  idt_tipo_assunto    Int?
+  idt_assunto         Int?
+  nom_instituicao     String? @db.NVarChar(80)
+  nom_responsavel     String? @db.NVarChar(50)
+  num_telResponsavel  String? @db.NVarChar(20)
+  nom_responsavel2    String? @db.NVarChar(50)
+  num_telResponsavel2 String? @db.NVarChar(20)
+  nom_tema            String? @db.NVarChar(255)
+  desc_perfil         String? @db.NText
+  num_vagas           Int?
+  num_vagasFLEM       Int?
+  tip_prioridade      Int?    @db.TinyInt
+  dat_inicio          String? @db.NVarChar(50)
+  dat_fim             String? @db.NVarChar(50)
+  nom_arquivo_html    String? @db.NVarChar(50)
+  flg_Gabinete        Boolean
+  flg_Publico         Boolean
+  flg_Apoio           Boolean
+  flg_LogFLEM         Boolean
+  flg_DispInternet    Boolean
+  flg_Autoridade      Boolean
+  des_url_evento      String? @db.NVarChar(100)
+  des_detalhe         String? @db.NText
+
+  @@ignore
+  @@schema("bdcolaborador].[dbo")
+}
+
+model eveRecurso {
+  idt_recurso       Int                 @id(map: "PK_eveRecurso") @default(autoincrement())
+  nom_recurso       String?             @db.VarChar(30)
+  flg_ativo         Boolean?
+  eveReservaRecurso eveReservaRecurso[]
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model eveReserva {
+  idt_reserva    Int              @id(map: "PK_eveReserva") @default(autoincrement())
+  nom_evento_res String?          @db.VarChar(50)
+  dat_inc_res    DateTime?        @default(now(), map: "DF_eveReserva_dat_inc_res") @db.DateTime
+  idt_colab_res  Int?
+  des_obs_res    String?          @db.VarChar(2000)
+  idt_colab_alt  Int?
+  dat_ult_alt    DateTime?        @db.DateTime
+  flg_status_res Boolean?
+  eveReservaData eveReservaData[]
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model eveReservaAlocacao {
+  idt_alocacao_res Int  @id(map: "PK_eveAlocacaoReserva") @default(autoincrement())
+  idt_res_espaco   Int?
+  idt_res_recurso  Int?
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model eveReservaData {
+  idt_data_res      Int                 @id(map: "PK_eveReservaData") @default(autoincrement())
+  idt_reserva       Int?
+  dat_hor_ini_res   DateTime?           @db.DateTime
+  dat_hor_fim_res   DateTime?           @db.DateTime
+  flg_bloqueio_alt  Int?                @db.TinyInt
+  eveReserva        eveReserva?         @relation(fields: [idt_reserva], references: [idt_reserva], onDelete: NoAction, onUpdate: NoAction, map: "FK_eveReservaData_eveReserva")
+  eveReservaEspaco  eveReservaEspaco[]
+  eveReservaRecurso eveReservaRecurso[]
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model eveReservaEspaco {
+  idt_res_espaco Int             @id(map: "PK_eveReservaEspaco") @default(autoincrement())
+  idt_data_res   Int?
+  idt_espaco     Int?
+  idt_status_res Int?            @default(3, map: "DF_eveReservaEspaco_idt_status_reserva") @db.SmallInt
+  dat_inclusao   DateTime?       @default(now(), map: "DF_eveReservaEspaco_dat_inclusao") @db.SmallDateTime
+  eveEspaco      eveEspaco?      @relation(fields: [idt_espaco], references: [idt_espaco], onDelete: NoAction, onUpdate: NoAction, map: "FK_eveReservaEspaco_eveEspaco")
+  eveReservaData eveReservaData? @relation(fields: [idt_data_res], references: [idt_data_res], onDelete: NoAction, onUpdate: NoAction, map: "FK_eveReservaEspaco_eveReservaData")
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model eveReservaRecurso {
+  idt_res_recurso Int             @id(map: "PK_eveReservaEspacoDia") @default(autoincrement())
+  idt_data_res    Int?
+  idt_recurso     Int?
+  idt_status_res  Int?            @default(3, map: "DF_eveReservaRecurso_idt_status_recurso") @db.SmallInt
+  eveRecurso      eveRecurso?     @relation(fields: [idt_recurso], references: [idt_recurso], onDelete: NoAction, onUpdate: NoAction, map: "FK_eveReservaRecurso_eveRecurso")
+  eveReservaData  eveReservaData? @relation(fields: [idt_data_res], references: [idt_data_res], onDelete: NoAction, onUpdate: NoAction, map: "FK_eveReservaRecurso_eveReservaData")
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model eveStatusReserva {
+  idt_status_res Int     @id(map: "PK_eveStatusReserva") @default(autoincrement()) @db.SmallInt
+  des_status_res String? @db.VarChar(10)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model eveV01Evento {
+  idt_evento          Int
+  nom_evento          String?   @db.VarChar(80)
+  idt_tipo_assunto    Int?
+  idt_assunto         Int?
+  nom_instituicao     String?   @db.VarChar(80)
+  nom_responsavel     String?   @db.VarChar(50)
+  num_telResponsavel  String?   @db.VarChar(20)
+  nom_responsavel2    String?   @db.VarChar(50)
+  num_telResponsavel2 String?   @db.VarChar(20)
+  nom_tema            String?   @db.VarChar(255)
+  desc_perfil         String?   @db.Text
+  num_vagas           Int?
+  num_vagasFLEM       Int?
+  tip_prioridade      Int?      @db.TinyInt
+  dat_inicio          DateTime? @db.DateTime
+  dat_fim             DateTime? @db.DateTime
+  nom_arquivo_html    String?   @db.VarChar(50)
+  flg_Gabinete        Boolean
+  flg_Publico         Boolean
+  flg_Apoio           Boolean
+  flg_LogFLEM         Boolean
+  flg_DispInternet    Boolean
+  flg_Autoridade      Boolean
+  des_url_evento      String?   @db.VarChar(100)
+  des_detalhe         String?   @db.Text
+
+  @@ignore
+  @@schema("bdcolaborador].[dbo")
+}
+
+model iffInformativo {
+  idt_informativo     Int     @id(clustered: false, map: "PK_iffInformativo")
+  ano_informativo     String  @db.Char(4)
+  mes_informativo     String  @db.Char(2)
+  nom_mes_informativo String  @db.VarChar(20)
+  nom_numero          String  @db.VarChar(10)
+  nom_ano             String  @db.VarChar(5)
+  cod_cor_informativo String  @db.Char(6)
+  cod_cor_titulo      String? @db.Char(6)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model iffNoticia {
+  idt_noticia     Int     @id(clustered: false, map: "PK_iffNoticia")
+  idt_informativo Int
+  nom_titulo      String  @db.VarChar(50)
+  des_noticia     String? @db.VarChar(8000)
+  cod_secao       String  @db.Char(1)
+  num_ordem_secao Int     @default(0, map: "DF_iffNoticia_num_ordem_secao") @db.SmallInt
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model innAcessoLog {
+  idt_teste    Int       @id(clustered: false, map: "PK_innAcessoLog") @default(autoincrement())
+  dat_teste    DateTime? @default(now(), map: "DF_innAcessoLog_dat_teste") @db.DateTime
+  nom_username String?   @db.VarChar(20)
+  tip_acesso   Int?      @db.SmallInt
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model innMensagemNatal {
+  idt_msg                Int      @id(clustered: false, map: "PK_innMensagemNatal") @default(autoincrement())
+  dat_msg                DateTime @default(now(), map: "DF_innMensagemNatal_dat_msg") @db.SmallDateTime
+  nom_username           String   @db.VarChar(20)
+  des_email_remetente    String   @db.VarChar(100)
+  des_email_destinatario String?  @db.VarChar(500)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model innQuemSouEu {
+  idt_quem            Int     @id(clustered: false, map: "PK_innQuemSouEu") @default(autoincrement())
+  nom_foto            String  @db.VarChar(50)
+  nom_foto_resumida   String? @db.VarChar(50)
+  flg_ativo           Int     @default(0, map: "DF_innQuemSouEu_flg_ativo") @db.TinyInt
+  nom_foto2           String? @db.VarChar(50)
+  nom_foto_resumida2  String? @db.VarChar(50)
+  nom_pessoa          String? @db.VarChar(50)
+  des_comentarios     String? @db.VarChar(800)
+  nom_vencedor        String? @db.VarChar(50)
+  des_coment_vencedor String? @db.VarChar(50)
+  nom_foto3           String? @db.VarChar(50)
+  nom_foto_resumida3  String? @db.VarChar(50)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model innQuemSouEuVotos {
+  idt_voto    Int      @id(clustered: false, map: "PK_innQuemSouEuVotos") @default(autoincrement())
+  idt_votante Int
+  idt_quem    Int
+  idt_palpite Int
+  dat_voto    DateTime @default(now(), map: "DF_innQuemSouEuVotos_dat_voto") @db.SmallDateTime
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model innTermometro {
+  idt_termo       Int      @id(clustered: false, map: "PK_innTermometro") @default(autoincrement())
+  dat_termo       DateTime @default(now(), map: "DF_innTermometro_dat_termo") @db.SmallDateTime
+  nom_username    String   @db.VarChar(20)
+  val_temperatura Int      @default(0, map: "DF_innTermometro_val_temperatura") @db.TinyInt
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model innTermometroGraus {
+  idt_grau     Int    @id(clustered: false, map: "PK_innTermometroGraus") @default(0, map: "DF_innTermometroGraus_idt_grau")
+  nom_grau     String @db.VarChar(20)
+  des_grau     String @db.VarChar(100)
+  nom_arq_grau String @db.VarChar(30)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model iscInterface {
+  idt_interface   Int     @id(map: "PK_iscInterface") @default(autoincrement())
+  nom_interface   String? @db.VarChar(50)
+  des_contato     String? @db.VarChar(50)
+  des_interface   String? @db.VarChar(50)
+  des_conexao_dsn String? @db.VarChar(20)
+  des_view        String? @db.VarChar(50)
+  qtd_campos      Int?    @db.SmallInt
+  des_dir_arquivo String? @db.VarChar(10)
+  des_nom_arquivo String? @db.VarChar(50)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model iscLayoutArquivo {
+  idt_campo      Int     @id(map: "PK_iscLayoutArquivo") @default(autoincrement())
+  idt_interface  Int
+  tip_registro   String  @default("D", map: "DF_iscLayoutArquivo_tip_registro") @db.Char(1)
+  des_campo      String  @db.VarChar(30)
+  tip_campo      String  @db.VarChar(10)
+  val_tam_campo  Int     @db.SmallInt
+  val_pos_ini    Int
+  val_pos_fim    Int
+  val_constante  String? @db.VarChar(50)
+  val_funcao     String? @db.VarChar(20)
+  des_campo_view String? @db.VarChar(20)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model plnControleEnvioPlan {
+  idt_controle     Int       @id(map: "PK_plnControleEnvioPlan")
+  dat_controle     DateTime? @db.SmallDateTime
+  nom_arquivo      String?   @db.NVarChar(50)
+  qtd_titular      Int?
+  qtd_dependente   Int?
+  qtd_tot_registro Int?
+  flg_status       Boolean?  @default(true, map: "DF_plnControleEnvioPlan_flg_status")
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model plnMovimentacao {
+  idt_movimentacao  Int      @id(clustered: false, map: "PK_plnMovimentacao") @default(autoincrement())
+  dat_movimentacao  DateTime @db.SmallDateTime
+  idt_tipo_operacao Int?     @db.SmallInt
+  idt_controle_pln  Int?
+  num_matricula     Int?
+  num_dependente    Int?
+  flg_processado    String?  @db.Char(1)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model plnParametro {
+  idt_planserv_param Int     @id(map: "PK_plnParametro") @default(autoincrement()) @db.SmallInt
+  cod_apolice        String? @default("62704", map: "DF_plnParametro_cod_empresa") @db.Char(5)
+  cod_flem           String? @default("97", map: "DF_plnParametro_cod_flem") @db.Char(2)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model plnPlanoPlanserv {
+  idt_plano        Int     @id(clustered: false, map: "PK_plnPlanoPlanserv") @default(autoincrement())
+  nom_plano        String? @db.NVarChar(15)
+  cod_plano        String? @db.Char(4)
+  cod_convenio_chr String? @db.Char(3)
+  cod_plano_chr    String? @db.Char(3)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model plnTipoDependente {
+  idt_tipo_dependente Int     @id(clustered: false, map: "PK_plnTipoDependente") @default(autoincrement())
+  cod_tipo_dependete  String? @db.Char(2)
+  des_tipo_dependente String? @db.VarChar(50)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model plnTipoOperacao {
+  idt_tipo_operacao Int     @id(clustered: false, map: "PK_plnTipoOperacao") @default(autoincrement()) @db.SmallInt
+  des_tipo_operacao String? @db.VarChar(30)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model plnTitular {
+  idt_titular        Int       @id(map: "PK_plnTitular")
+  num_empresa        Int?
+  cod_setor          String?   @db.Char(10)
+  cod_matricula      String?   @db.VarChar(5)
+  tip_opcao          String?   @db.Char(10)
+  tip_plano          Int?
+  flg_excluido_plano Boolean?
+  dat_opcao_plano    DateTime? @db.SmallDateTime
+  tip_situacao       Int?      @db.SmallInt
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model radEstiloMusical {
+  idt_estilo Int    @id(clustered: false, map: "PK_radEstiloMusical") @default(autoincrement())
+  nom_estilo String @db.VarChar(20)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model radMusica {
+  idt_musica   Int    @id(clustered: false, map: "PK_radMusica") @default(autoincrement())
+  nom_musica   String @db.VarChar(100)
+  nom_cantor   String @db.VarChar(100)
+  nom_endereco String @db.VarChar(255)
+  flg_selecao  Int    @default(0, map: "DF_radMusica_flg_selecao") @db.SmallInt
+  idt_estilo   Int?   @default(0, map: "DF_radMusica_idt_estilo") @db.SmallInt
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model segAcessoFuncao {
+  idt_acesso     Int       @id(clustered: false, map: "PK_segAcessoCCusto") @default(autoincrement())
+  idt_colab      Int
+  cod_aplicativo String    @db.Char(3)
+  idt_funcao     Int       @default(0, map: "DF_segAcessoFuncao_idt_funcao")
+  dat_inclusao   DateTime? @default(now(), map: "DF_segAcessoFuncao_dat_inclusao") @db.SmallDateTime
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model segLog {
+  idt_log        Int      @id(clustered: false, map: "PK_segLog") @default(autoincrement())
+  nom_username   String   @db.VarChar(25)
+  idt_usuario    Int
+  idt_aplicativo Int
+  des_param      String   @db.VarChar(255)
+  dat_inclusao   DateTime @default(now(), map: "DF_segLog_dat_inclusao") @db.SmallDateTime
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model serAcompanhamento {
+  idt_acomp       Int       @id(clustered: false, map: "PK_serAcompanhamento") @default(autoincrement())
+  idt_solic       Int?
+  idt_responsavel Int?
+  des_acomp       String?   @db.NVarChar(500)
+  dat_acomp       DateTime? @db.SmallDateTime
+  idt_status      Int?      @db.TinyInt
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model serSolicitacaoServico {
+  idt_solic        Int       @id(clustered: false, map: "PK_serSolicitacaoServico") @default(autoincrement())
+  idt_servico      Int?
+  idt_solicitante  Int?
+  des_solic        String?   @db.NVarChar(500)
+  des_local_solic  String?   @db.NVarChar(50)
+  dat_solic        DateTime? @db.SmallDateTime
+  idt_status_solic Int?      @db.TinyInt
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model Setor {
+  idt_setor Int     @id(clustered: false, map: "PK_Setor") @default(autoincrement())
+  nom_setor String? @db.NVarChar(15)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model sigAcessoAplicativoOLD {
+  idt_acesso     Int      @id(clustered: false, map: "PK_sigAcessoAplicativo") @default(autoincrement())
+  idt_colab      Int      @default(0, map: "DF_sigAcessoAplicativo_idt_colab")
+  idt_aplicativo Int      @default(0, map: "DF_sigAcessoAplicativo_idt_aplicativo")
+  dat_inclusao   DateTime @db.SmallDateTime
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model sigCompGrupoOLD {
+  idt_comp        Int       @id(clustered: false, map: "PK_sigCompGrupo") @default(autoincrement())
+  dat_vencto_comp DateTime  @db.SmallDateTime
+  dat_pagto_comp  DateTime? @db.SmallDateTime
+  cod_status      String    @db.Char(1)
+  cod_entidade    String    @db.VarChar(16)
+  tip_entidade    String    @db.Char(1)
+  cod_frec        String    @db.VarChar(20)
+  cod_tipo_doc    String    @db.VarChar(6)
+  val_comp        String    @default("0", map: "DF_sigCompGrupo_val_comp") @db.Char(10)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model sigCompromissosOLD {
+  dat_vencto      DateTime? @db.SmallDateTime
+  dat_pagto       DateTime? @db.SmallDateTime
+  cod_status      String    @db.Char(1)
+  cod_ent         String    @db.VarChar(16)
+  cod_tipo_ent    String    @db.Char(1)
+  cod_frec        String?   @db.VarChar(20)
+  cod_tipo_doc    String?   @db.Char(6)
+  num_doc         String?   @db.VarChar(16)
+  val_comp        Float     @default(0, map: "DF_sigCompromissos_val_comp") @db.Real
+  des_comp        String?   @db.VarChar(750)
+  cod_apd_tp      String    @db.Char(6)
+  cod_apd_id      String    @db.VarChar(16)
+  cod_apd_insm_nb Int       @default(0, map: "DF_sigCompromissos_cod_apd_insm_nb") @db.SmallInt
+  cod_processo    String?   @db.VarChar(20)
+  dat_vencto_gem  String?   @db.Char(8)
+  dat_pagto_gem   String?   @db.Char(8)
+
+  @@id([cod_apd_tp, cod_apd_id, cod_apd_insm_nb], map: "PK_sigCompromissos", clustered: false)
+  @@index([cod_status], map: "IX_sigCompromissos01")
+  @@index([cod_ent], map: "IX_sigCompromissos02")
+  @@index([cod_tipo_ent], map: "IX_sigCompromissos03")
+  @@index([cod_frec], map: "IX_sigCompromissos04")
+  @@index([cod_tipo_doc], map: "IX_sigCompromissos05")
+  @@index([cod_processo], map: "IX_sigCompromissos06")
+  @@schema("bdcolaborador].[dbo")
+}
+
+model sigConsultas {
+  idt_consulta   Int     @id(map: "PK_sigConsultas") @default(autoincrement())
+  cod_consulta   String? @db.Char(5)
+  des_consulta   String  @db.VarChar(50)
+  idt_grconsulta Int
+  nom_pagina     String? @db.VarChar(50)
+  num_ordem      Int?    @db.SmallInt
+  flg_ativo      Int?    @db.TinyInt
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model sigContaGeralProjetos {
+  idt_cgp  Int    @id(map: "PK_sigContaGeralProjetos") @default(autoincrement())
+  cod_frec String @unique(map: "IX_COD_FREC") @db.VarChar(30)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model sigControleImportacaoOLD {
+  idt_controle      Int       @id(clustered: false, map: "PK_sigControleImportacao") @default(autoincrement())
+  dat_inicio_import DateTime  @default(now(), map: "DF_sigControleImportacao_dat_inicio_import") @db.SmallDateTime
+  flg_controle      Int       @default(1, map: "DF_sigControleImportacao_flg_estagio") @db.SmallInt
+  dat_fim_import    DateTime? @db.SmallDateTime
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model sigEntidadeOLD {
+  cod_entidade      String @id(clustered: false, map: "PK_sigEntidade") @db.VarChar(16)
+  nom_entidade      String @db.VarChar(115)
+  cod_tipo_entidade String @default("X", map: "DF_sigEntidade_cod_tipo_entidade") @db.Char(1)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model sigFonteDeRecursos {
+  cod_frec             String   @unique(map: "PK_FonteDeRecursos") @db.VarChar(30)
+  des_frec             String   @db.VarChar(40)
+  des_curta_frec       String?  @db.VarChar(30)
+  des_frec_alter       String?  @db.VarChar(40)
+  des_curta_frec_ALTER String?  @db.VarChar(20)
+  situacao             Boolean?
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model sigFonteDeRecursosOLD {
+  cod_frec             String  @id(clustered: false, map: "PK_sigFonteDeRecursos") @db.VarChar(30)
+  des_frec             String  @db.VarChar(40)
+  des_curta_frec       String  @db.VarChar(20)
+  des_frec_alter       String? @db.VarChar(40)
+  des_curta_frec_ALTER String? @db.VarChar(20)
+
+  @@index([cod_frec], map: "IX_sigFonteDeRecursos01")
+  @@schema("bdcolaborador].[dbo")
+}
+
+model sigGrCCusto {
+  idt_grupo    Int
+  cod_ccusto   String   @db.VarChar(16)
+  dat_inclusao DateTime @default(now(), map: "DF_panCCusto_dat_inclusao") @db.SmallDateTime
+  idt_grccusto Int      @id(clustered: false, map: "PK_panCCusto")
+
+  @@index([idt_grupo], map: "IX_sigGRCusto01")
+  @@index([cod_ccusto], map: "IX_sigGRCusto02")
+  @@schema("bdcolaborador].[dbo")
+}
+
+model sigGrColab {
+  idt_grcolab  Int      @id(clustered: false, map: "PK_sigGrColab") @default(autoincrement())
+  idt_grupo    Int      @default(0, map: "DF_sigGRColab_idt_grcons")
+  idt_colab    Int      @default(0, map: "DF_sigGRColab_idt_colab")
+  dat_inclusao DateTime @default(now(), map: "DF_sigGRColab_dat_inclusao") @db.SmallDateTime
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model sigGrConsolidacao {
+  idt_grcons Int      @id(clustered: false, map: "PK_sigGrConsolidacao") @default(autoincrement())
+  nom_grcons String   @db.VarChar(50)
+  dat_grcons DateTime @default(now(), map: "DF_sigGrConsolidacao_dat_grcons") @db.SmallDateTime
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model sigGrFRec {
+  idt_grfrec   Int      @id(clustered: false, map: "PK_sigGrConsFRec") @default(autoincrement())
+  idt_grupo    Int
+  cod_frec     String   @db.VarChar(16)
+  dat_inclusao DateTime @default(now(), map: "DF_sigGrConsFRec_dat_inclusao") @db.SmallDateTime
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model sigGrupoConsulta {
+  idt_grconsulta Int    @id(map: "PK_sigGrupoConsulta") @default(autoincrement())
+  nom_grconsulta String @db.VarChar(50)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model sigLancamentosOLD {
+  dat_lanc      DateTime? @db.SmallDateTime
+  tip_processo  String?   @db.Char(6)
+  cod_lanc      String?   @db.VarChar(16)
+  cod_seq       Int?
+  cod_ccontabil String?   @db.VarChar(16)
+  cod_cc1       String?   @db.VarChar(12)
+  cod_cc2       String?   @db.VarChar(50)
+  cod_opr       String?   @db.Char(1)
+  val_lanc      Float?    @db.Real
+  des_lanc      String?   @db.VarChar(160)
+  dat_lanc_gem  String?   @db.Char(8)
+
+  @@ignore
+  @@schema("bdcolaborador].[dbo")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model sigLancamentosTempOLD {
+  dat_lanc               DateTime? @db.SmallDateTime
+  tip_processo           String?   @db.Char(6)
+  cod_lanc               String?   @db.VarChar(16)
+  cod_seq                Int?
+  cod_ccontabil          String?   @db.VarChar(16)
+  cod_cc1                String?   @db.VarChar(12)
+  cod_cc2                String?   @db.VarChar(50)
+  cod_opr                String?   @db.Char(1)
+  val_lanc               Float?    @db.Real
+  des_lanc               String?   @db.VarChar(160)
+  dat_lanc_gem           String?   @db.Char(8)
+  cod_ccontabil_atualiza String?   @db.VarChar(16)
+  val_credito            Float?    @db.Real
+  val_debito             Float?    @db.Real
+
+  @@ignore
+  @@schema("bdcolaborador].[dbo")
+}
+
+model sigLancGrupoOLD {
+  idt_cons      Int      @id(clustered: false, map: "PK_sigConsLancContabeis") @default(autoincrement())
+  dat_cons      DateTime @db.SmallDateTime
+  cod_cc1       String   @db.VarChar(12)
+  cod_cc2       String   @db.VarChar(12)
+  tip_lanc      String   @default("-1", map: "DF_sigLancGrupo_tip_lanc") @db.Char(1)
+  tip_lanc_sub  String?  @default("0", map: "DF_sigLancGrupo_tip_lanc_sub") @db.Char(1)
+  cod_ccontabil String   @db.VarChar(16)
+  val_credito   Float    @db.Real
+  val_debito    Float    @db.Real
+
+  @@index([cod_cc2], map: "IX_sigConsLancContabeis")
+  @@index([cod_ccontabil], map: "IX_sigConsLancContabeis02", clustered: true)
+  @@index([cod_cc1], map: "IX_sigConsLancContabeis03")
+  @@index([cod_ccontabil], map: "IX_sigConsLancContabeis04")
+  @@index([tip_lanc], map: "IX_sigConsLancContabeis05")
+  @@schema("bdcolaborador].[dbo")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model sigLancGrupoTempOLD {
+  dat_cons      DateTime @db.SmallDateTime
+  cod_cc1       String   @db.VarChar(12)
+  cod_cc2       String   @db.VarChar(12)
+  tip_lanc      String   @default("-1", map: "DF_sigLancGrupoTemp_tip_lanc") @db.Char(1)
+  tip_lanc_sub  String?  @default("0", map: "DF_sigLancGrupoTemp_tip_lanc_sub") @db.Char(1)
+  cod_ccontabil String?  @db.VarChar(16)
+  val_credito   Float    @default(0, map: "DF_sigLancGrupoTemp_val_credito") @db.Real
+  val_debito    Float    @default(0, map: "DF_sigLancGrupoTemp_val_debito") @db.Real
+
+  @@ignore
+  @@schema("bdcolaborador].[dbo")
+}
+
+model sigLogOLD {
+  idt_log       Int      @id(clustered: false, map: "PK_sigLog") @default(autoincrement())
+  nom_username  String   @db.VarChar(25)
+  idt_grcons    Int
+  des_param     String?  @db.VarChar(255)
+  dat_inclusao  DateTime @default(now(), map: "DF_sigLog_dat_inclusao") @db.SmallDateTime
+  cod_indicador String?  @db.Char(3)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model sigRecDespMensalTempOLD {
+  COD_CCUSTO  String?  @db.VarChar(16)
+  NOM_CCUSTO  String?  @db.VarChar(40)
+  VAL_RECEITA Decimal? @default(0, map: "DF_sigRecDespMensalTemp_VAL_RECEITA") @db.Decimal(18, 2)
+  VAL_DESPESA Decimal? @default(0, map: "DF_sigRecDespMensalTemp_VAL_DESPESA") @db.Decimal(18, 2)
+  IDT_USUARIO Int?     @default(0, map: "DF_sigRecDespMensalTemp_IDT_USUARIO")
+  ANO_RECDESP Int?     @default(0, map: "DF_sigRecDespMensalTemp_ANO_RECDESP") @db.SmallInt
+  MES_RECDESP Int?     @default(0, map: "DF_sigRecDespMensalTemp_MES_RECDESP") @db.SmallInt
+
+  @@ignore
+  @@schema("bdcolaborador].[dbo")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model sigRecDespTempOLD {
+  COD_CCUSTO  String?  @db.VarChar(16)
+  NOM_CCUSTO  String?  @db.VarChar(40)
+  VAL_RECEITA Decimal? @default(0, map: "DF_sigRecDespTemp_VAL_RECEITA") @db.Decimal(18, 2)
+  VAL_DESPESA Decimal? @default(0, map: "DF_sigRecDespTemp") @db.Decimal(18, 2)
+  IDT_USUARIO Int?     @default(0, map: "DF_sigRecDespTemp_IDT_USUARIO")
+
+  @@ignore
+  @@schema("bdcolaborador].[dbo")
+}
+
+model sigRFPOLD {
+  idt_rfp Int     @id(clustered: false, map: "PK_sigRFP") @default(autoincrement())
+  cod_cl  String  @db.Char(10)
+  cod_id  String  @db.Char(26)
+  cod_seq String  @db.Char(10)
+  cod_cc1 String? @db.VarChar(12)
+  cod_cc2 String? @db.VarChar(12)
+  cod_tp  String  @db.Char(1)
+  val_rfp Int
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model sigSaldoInicialOLD {
+  ano_saldo Int
+  cod_cc1   String @db.VarChar(12)
+  cod_cc2   String @db.VarChar(12)
+  val_saldo Float  @default(0, map: "DF_sigSaldoInicial_val_saldo") @db.Real
+  cod_tipo  String @default("0", map: "DF_sigSaldoInicial_cod_tipo") @db.Char(1)
+  des_tipo  String @default("Resultado", map: "DF_sigSaldoInicial_des_tipo") @db.Char(9)
+  num_ordem Int    @default(0, map: "DF_sigSaldoInicial_num_ordem") @db.SmallInt
+
+  @@id([ano_saldo, cod_cc1, cod_cc2], map: "PK_sigSaldoInicial", clustered: false)
+  @@schema("bdcolaborador].[dbo")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model sigSaldoInicialTempOLD {
+  ano_saldo Int
+  cod_cc1   String @db.VarChar(12)
+  cod_cc2   String @db.VarChar(12)
+  val_saldo Float  @default(0, map: "DF_sigSaldoInicialTemp_val_saldo") @db.Real
+  cod_tipo  String @default("0", map: "DF_sigSaldoInicialTemp_cod_tipo") @db.Char(1)
+  des_tipo  String @default("Resultado", map: "DF_sigSaldoInicialTemp_des_tipo") @db.Char(9)
+  num_ordem Int    @default(0, map: "DF_sigSaldoInicialTemp_num_ordem") @db.SmallInt
+
+  @@ignore
+  @@schema("bdcolaborador].[dbo")
+}
+
+model sigStatusCompromissoOLD {
+  cod_status String @id(clustered: false, map: "PK_sigStatusCompromisso") @db.Char(1)
+  des_status String @db.VarChar(30)
+  num_ordem  Int    @default(0, map: "DF_sigStatusCompromisso_num_ordem") @db.SmallInt
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model sigStrelEC01OLD {
+  cod_ec01       String  @id(clustered: false, map: "PK_sigStrelEC01") @unique(map: "sigStrelEC0101", clustered: true) @db.VarChar(30)
+  des_ec01       String  @db.VarChar(40)
+  sig_ec01       String? @db.Char(2)
+  tip_ec01       String  @db.Char(1)
+  num_nivel_ec01 Int
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model sigStrelEC02OLD {
+  cod_ec02       String  @id(clustered: false, map: "PK_sigStrelEC02") @unique(map: "sigStrelEC0201") @db.VarChar(30)
+  des_ec02       String  @db.VarChar(40)
+  tip_ec02       String  @db.Char(1)
+  num_nivel_ec02 Int
+  cod_ec02_alter String? @db.VarChar(30)
+  des_ec02_alter String? @db.VarChar(50)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model sigStrelPL01OLD {
+  cod_pl01       String @id(clustered: false, map: "PK_sigStrelPL01") @unique(map: "IX_STRELPL0101") @db.VarChar(30)
+  des_pl01       String @db.VarChar(40)
+  tip_pl01       String @db.Char(1)
+  num_nivel_pl01 Int
+
+  @@index([cod_pl01], map: "IX_sigStrelPL01")
+  @@schema("bdcolaborador].[dbo")
+}
+
+model sigTabIndicadores {
+  idt_indicador     Int    @id(clustered: false, map: "PK_sigTabIndicadores") @default(autoincrement())
+  nom_indicador     String @db.VarChar(50)
+  cod_log_indicador String @db.Char(3)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model sigTipoDocumentoOLD {
+  cod_tipo_doc String @id(clustered: false, map: "PK_sigTipoDocumento") @db.Char(6)
+  des_tipo_doc String @db.VarChar(40)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model sigTipoEntidadeOLD {
+  idt_tipo_ent Int    @id(clustered: false, map: "PK_sigTipoEntidade") @default(autoincrement())
+  cod_tipo_ent String @db.Char(6)
+  des_tipo_ent String @db.VarChar(40)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model sigTipoLancamentoOLD {
+  cod_tipo     String @db.Char(1)
+  cod_tipo_sub String @db.Char(1)
+  des_tipo     String @db.VarChar(50)
+  num_ordem    Int    @default(0, map: "DF_sigTipoLancamento_nom_ordem")
+
+  @@id([cod_tipo, cod_tipo_sub], map: "PK_sigTipoLancamento", clustered: false)
+  @@schema("bdcolaborador].[dbo")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model strel {
+  strel_own      String   @db.Char(5)
+  strel_str      String   @db.Char(4)
+  strel_id       String   @db.VarChar(30)
+  strel_dsc      String?  @db.VarChar(40)
+  strel_shrt_dsc String?  @db.VarChar(20)
+  strel_tp       String?  @db.Char(1)
+  strel_st       String?  @db.Char(1)
+  strel_lvl      Decimal? @db.Decimal(3, 0)
+  strel_seq      Decimal? @db.Decimal(18, 0)
+  strel_lng_dsc  String?  @db.VarChar(250)
+
+  @@ignore
+  @@schema("bdcolaborador].[dbo")
+}
+
+model Sugestoes {
+  idt_sugestao Int       @id(clustered: false, map: "PK_Sugestoes") @default(autoincrement())
+  idt_colab    Int?      @default(0, map: "DF_Sugestoes_idt_colab")
+  des_sugestao String?   @db.NVarChar(2000)
+  dat_sugestao DateTime? @default(now(), map: "DF_Sugestoes_dat_sugestao") @db.SmallDateTime
+  flg_sugestao Int       @default(0, map: "DF_Sugestoes_flg_sugestao") @db.TinyInt
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model tabCargo {
+  idt_cargo           Int     @id(clustered: false, map: "PK_tabCargo") @default(autoincrement())
+  nom_cargo           String? @db.NVarChar(50)
+  val_viagem_bahia    Int?    @default(0, map: "DF_tabCargo_val_viagem_bahia")
+  val_viagem_brasil   Int?    @default(0, map: "DF_tabCargo_val_viagem_brasil")
+  val_viagem_exterior Int?    @default(0, map: "DF_tabCargo_val_viagem_exterior")
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model tabCategoriaServico {
+  idt_catserv Int     @id(clustered: false, map: "PK_tabCategoriaServico") @default(autoincrement())
+  nom_catserv String? @db.NVarChar(15)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model tabCCustoLotacaoHRTeste {
+  idt_ccustoHR    Int     @id(map: "PK_tabCCustoLotacaoHR") @default(autoincrement())
+  cod_elem_estrut String? @db.Char(20)
+  cod_ccusto      String? @db.Char(16)
+  cod_cc1         String? @db.Char(4)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model tabCentroResp {
+  cod_cresp       String  @id(clustered: false, map: "PK_desCentroResp") @db.Char(4)
+  nom_cresp       String  @db.VarChar(100)
+  tip_cresp       Int     @db.TinyInt
+  tip_ativo       Int?    @default(0, map: "DF_tabCentroResp_tip_ativo") @db.TinyInt
+  nom_cresp_alter String? @db.VarChar(50)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model tabCidade {
+  idt_cidade Int     @id(clustered: false, map: "PK_tabCidade") @default(autoincrement())
+  nom_cidade String? @db.NVarChar(50)
+  cod_uf     String? @db.NVarChar(2)
+  idt_pais   Int?    @default(0, map: "DF_tabCidade_idt_pais")
+  cod_ddd    Int?    @default(0, map: "DF_tabCidade_cod_ddd") @db.TinyInt
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model tabContaContabilFornecedor {
+  idt_conta Int    @id(clustered: false, map: "PK_tabContaContabilFonecedor") @default(autoincrement())
+  cod_conta String @db.VarChar(16)
+  des_conta String @db.VarChar(50)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model tabContaDespesas {
+  idt_conta          Int     @id(clustered: false, map: "PK_tabContaDespesas") @default(autoincrement())
+  num_nivel_conta    Int?    @db.SmallInt
+  cod_conta          String? @db.VarChar(50)
+  des_conta          String? @db.VarChar(50)
+  des_resumida_conta String? @db.Char(20)
+  tip_conta          String? @db.Char(1)
+  cod_conta_sup      String? @db.Char(16)
+  cod_sinonimo_conta String? @db.Char(16)
+
+  @@index([cod_conta], map: "IX_tabContaDespesas")
+  @@schema("bdcolaborador].[dbo")
+}
+
+model tabConversaoMoeda {
+  idt_moeda_origem  Int       @default(0, map: "DF_tabConversaoMoeda_idt_moeda_origem")
+  idt_moeda_destino Int       @default(0, map: "DF_tabConversaoMoeda_idt_moeda_destino")
+  dat_cambio        DateTime? @db.SmallDateTime
+  val_cambio        Float?    @db.Real
+
+  @@id([idt_moeda_origem, idt_moeda_destino], map: "PK_tabConversaoMoeda", clustered: false)
+  @@schema("bdcolaborador].[dbo")
+}
+
+model tabDepartamentoCCustoX {
+  idt_dept_ccusto Int       @default(autoincrement())
+  idt_dept        Int
+  cod_ccusto      String    @db.VarChar(9)
+  dat_inclusao    DateTime? @default(now(), map: "DF_tabDepartamentoCCusto_dat_inclusao") @db.SmallDateTime
+
+  @@id([idt_dept, cod_ccusto], map: "PK_tabDepartamentoCCusto", clustered: false)
+  @@schema("bdcolaborador].[dbo")
+}
+
+model tabDiretoria {
+  idt_diretoria       Int     @id(clustered: false, map: "PK_tabDiretoria") @default(autoincrement())
+  nom_diretoria       String? @db.NVarChar(50)
+  nom_sigla_diretoria String? @db.NVarChar(4)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model tabEstadoCivil {
+  idt_estcivil     Int     @id(clustered: false, map: "PK_tabEstadoCivil") @default(autoincrement())
+  nom_estcivil     String? @db.NVarChar(15)
+  cod_estcivil     String? @db.NVarChar(1)
+  cod_estcivil_erp Int?
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model tabFaixaEtaria {
+  idt_faixa_etaria Int     @id(map: "PK_tabFaixaEtaria") @default(autoincrement())
+  des_faixa_etaria String? @db.Char(15)
+  val_idade_ini    Int?
+  val_idade_fim    Int?
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model tabGrauInstrucao {
+  idt_grau_instrucao Int     @id(clustered: false, map: "PK_tabGrauInstrucao") @default(autoincrement())
+  des_grau_instrucao String? @db.VarChar(20)
+  cod_grau_instrucao String? @db.Char(3)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model tabGrauParentesco {
+  idt_grau_parentesco Int     @id(clustered: false, map: "PK_tabGrauParentesco") @default(autoincrement())
+  nom_grau_parentesco String? @db.VarChar(35)
+  cod_grau_parentesco String? @db.Char(3)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model tabMes {
+  idt_mes  Int     @id(clustered: false, map: "PK_tabMes") @default(autoincrement()) @db.TinyInt
+  nom_mes  String? @db.NVarChar(20)
+  sig_mes  String? @db.NVarChar(3)
+  num_dias Int?    @db.SmallInt
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model tabModalidade_Viagem {
+  idt_modalidade Int     @id(clustered: false, map: "PK_tabModalidade_Viagem") @default(autoincrement())
+  nom_modalidade String? @db.NVarChar(50)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model tabMoeda {
+  idt_moeda Int     @id(clustered: false, map: "PK_tabMoeda") @default(autoincrement())
+  nom_moeda String? @db.NVarChar(15)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model tabMotivo_Viagem {
+  idt_motivo Int     @id(clustered: false, map: "PK_tabMotivo_Viagem") @default(autoincrement())
+  nom_motivo String? @db.NVarChar(50)
+  tip_motivo Int?    @default(2, map: "DF_tabMotivo_Viagem_tip_motivo") @db.TinyInt
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model tabNacionalidade {
+  idt_nacionalidade     Int     @id(clustered: false, map: "PK_tabNacionalidade") @default(autoincrement())
+  des_nacionalidade     String? @db.VarChar(30)
+  cod_nacionalidade_erp Int?
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model tabPais {
+  idt_pais               Int     @id(clustered: false, map: "PK_tabPais") @default(autoincrement())
+  nom_pais               String? @db.NVarChar(30)
+  Nom_original_pais      String? @db.NVarChar(255)
+  Nom_ingles_pais        String? @db.NVarChar(30)
+  Nom_nacionalidade_pais String? @db.NVarChar(20)
+  Idt_idioma             Int?    @default(0, map: "DF_tabPais_Idt_idioma")
+  idt_contin             Int?    @default(0, map: "DF_tabPais_idt_contin")
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model tabRacaCor {
+  idt_raca_cor     Int     @id(clustered: false, map: "PK_tabRacaCor") @default(autoincrement())
+  des_raca_cor     String? @db.VarChar(15)
+  cod_raca_cor_erp Int?
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model tabServicoInstalacoes {
+  idt_servico     Int     @id(clustered: false, map: "PK_tabServicoInstalacoes") @default(autoincrement())
+  nom_servico     String? @db.NVarChar(40)
+  idt_responsavel Int?    @default(0, map: "DF_tabServicoInstalacoes_idt_responsavel")
+  idt_catserv     Int?    @default(0, map: "DF_tabServicoInstalacoes_idt_catserv")
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model tabSexo {
+  idt_sexo Int     @id(clustered: false, map: "PK_tabSexo")
+  nom_sexo String? @db.NVarChar(15)
+  cod_sexo String? @db.NVarChar(1)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model tabSistema {
+  idt_sistema       Int     @id(clustered: false, map: "PK_tabSistema") @default(autoincrement())
+  nom_sistema       String? @db.NVarChar(50)
+  nom_sigla_sistema String? @db.NVarChar(3)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model tabSituacaoMilitar {
+  idt_situacao_militar Int     @default(autoincrement())
+  des_situacao_militar String? @db.VarChar(30)
+
+  @@ignore
+  @@schema("bdcolaborador].[dbo")
+}
+
+model tabStatusServico {
+  idt_status Int     @id(clustered: false, map: "PK_tabStatusServico") @db.TinyInt
+  nom_status String? @db.NVarChar(30)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model tabTipo_Despesa_Viagem {
+  idt_tipo_despesa Int     @id(clustered: false, map: "PK_tabTipo_Despesa_Viagem") @default(autoincrement())
+  nom_tipo_despesa String? @db.NVarChar(50)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model tabTipoDependente {
+  idt_tipo  Int    @id(map: "PK_tabTipoDependente")
+  nom_tipo  String @db.VarChar(20)
+  tip_ordem Int?   @default(0, map: "DF_tabTipoDependente_tip_ordem") @db.SmallInt
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model tabTipoDependIR {
+  idt_tipo Int    @id(clustered: false, map: "PK_tabTipoDependIR") @default(autoincrement())
+  nom_tipo String @db.VarChar(100)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model tabTipoSangue {
+  idt_tipo_sangue Int     @id(clustered: false, map: "PK_tabTipoSangue") @default(autoincrement()) @db.SmallInt
+  des_tipo_sangue String? @db.Char(2)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model tabTipoSangueFatorRH {
+  idt_fator_rh Int     @default(autoincrement()) @db.SmallInt
+  des_fator_rh String? @db.Char(1)
+
+  @@ignore
+  @@schema("bdcolaborador].[dbo")
+}
+
+model tabUF {
+  cod_uf String  @id(clustered: false, map: "PK_tabUF") @db.NVarChar(2)
+  Nom_uf String? @db.NVarChar(30)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model tbClaClassificados {
+  idt_anuncio        Int       @id(clustered: false, map: "PK_claClassificados") @default(autoincrement())
+  des_destaque       String?   @db.VarChar(25)
+  des_anuncio        String    @db.VarChar(500)
+  dat_inicio_anuncio DateTime  @default(now(), map: "DF_claClassificados_dat_inicio_anuncio") @db.SmallDateTime
+  dat_fim_anuncio    DateTime  @db.SmallDateTime
+  idt_colaborador    Int       @default(0, map: "DF_claClassificados_idt_colaborador")
+  idt_tipoanuncio    Int       @default(0, map: "DF_claClassificados_idt_tipoanuncio")
+  flg_exclusao       Int       @default(0, map: "DF_claClassificados_flg_exclusao") @db.TinyInt
+  dat_exclusao       DateTime? @db.SmallDateTime
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model tbClaTipoClassificado {
+  idt_tipoanuncio Int     @id(clustered: false, map: "PK_claTipoClassificado") @default(autoincrement())
+  nom_tipoanuncio String? @db.NVarChar(50)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model tbSegAplicativo {
+  idt_aplicativo Int      @id(clustered: false, map: "PK_tbSegAplicativo") @default(autoincrement())
+  cod_aplicativo String   @db.Char(3)
+  nom_aplicativo String   @db.VarChar(50)
+  flg_ativo      Int      @default(0, map: "DF_tbSegAplicativo_flg_ativo") @db.TinyInt
+  flg_seguranca  Int?     @default(0, map: "DF_tbSegAplicativo_flg_publico") @db.TinyInt
+  dat_inclusao   DateTime @default(now(), map: "DF_tbSegAplicativo_dat_inclusao") @db.SmallDateTime
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model tbSegColabPerfil {
+  idt_colab_perfil Int      @id(clustered: false, map: "PK_tbSegColabPerfil") @default(autoincrement())
+  idt_colab        Int
+  idt_perfil       Int
+  flg_ativo        Int      @default(1, map: "DF_tbSegColabPerfil_flg_ativo") @db.TinyInt
+  dat_inclusao     DateTime @default(now(), map: "DF_tbSegColabPerfil_dat_inclusao") @db.SmallDateTime
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model tbSegFuncao {
+  idt_funcao     Int      @id(clustered: false, map: "PK_tbSegFuncao") @default(autoincrement())
+  cod_funcao     Int
+  des_funcao     String   @db.VarChar(500)
+  idt_aplicativo Int
+  flg_ativo      Int      @default(0, map: "DF_tbSegFuncao_flg_ativo") @db.TinyInt
+  dat_inclusao   DateTime @default(now(), map: "DF_tbSegFuncao_dat_inclusao") @db.SmallDateTime
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model tbSegPerfil {
+  idt_perfil   Int      @id(clustered: false, map: "PK_tbSegPerfil") @default(autoincrement())
+  nom_perfil   String   @db.VarChar(50)
+  des_perfil   String?  @db.VarChar(2000)
+  dat_inclusao DateTime @default(now(), map: "DF_tbSegPerfil_dat_inclusao") @db.SmallDateTime
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model tbSegPerfilFuncao {
+  idt_perfil_funcao Int      @id(clustered: false, map: "PK_tbSegPerfilFuncao") @default(autoincrement())
+  idt_perfil        Int
+  idt_funcao        Int
+  flg_ativo         Int      @default(1, map: "DF_tbSegPerfilFuncao_flg_ativo") @db.TinyInt
+  dat_inclusao      DateTime @default(now(), map: "DF_tbSegPerfilFuncao_dat_inclusao") @db.SmallDateTime
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model tbTabCargoFLEM {
+  idt_cargo            Int     @id(clustered: false, map: "PK_tabCargoFLEM") @default(autoincrement())
+  Nom_cargo            String? @db.NVarChar(60)
+  val_viagem_ba        Float   @default(0, map: "DF_tabCargoFLEM_val_viagem_ba") @db.Real
+  val_viagem_br        Float   @default(0, map: "DF_tabCargoFLEM_val_viagem_br") @db.Real
+  val_viagem_ex        Float   @default(0, map: "DF_tabCargoFLEM_val_viagem_ex") @db.Real
+  cod_hierarquia_cargo Int     @default(0, map: "DF_tabCargoFLEM_cod_hierarquia_cargo") @db.TinyInt
+  cod_cargo_hr         Int?    @default(0, map: "DF_tabCargoFLEM_cod_cargo_hr")
+  val_salario          Float?  @default(0, map: "DF_tabCargoFLEM_val_salario") @db.Real
+  flg_ativo            Int?    @default(0, map: "DF_tabCargoFLEM_flg_ativo") @db.TinyInt
+  tip_estrutura        String? @db.Char(1)
+  cod_cargo_dominio    Int?
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model tbTabCentroCusto {
+  idt_ccusto       Int       @default(autoincrement())
+  cod_ccusto       String    @id(clustered: false, map: "PK_desCentroCusto") @db.VarChar(16)
+  nom_ccusto       String    @db.VarChar(100)
+  tip_ccusto       Int       @db.TinyInt
+  flg_ativo        Int?      @db.TinyInt
+  cod_frec         String?   @db.VarChar(16)
+  idt_centro       Int?
+  dat_inclusao     DateTime? @default(now(), map: "DF_tabCentroCusto_dat_inclusao") @db.SmallDateTime
+  cod_ccusto_alter String?   @db.VarChar(16)
+  nom_ccusto_alter String?   @db.VarChar(100)
+  dat_inativacao   DateTime? @db.SmallDateTime
+
+  @@index([idt_ccusto], map: "IDX_idt_ccusto")
+  @@schema("bdcolaborador].[dbo")
+}
+
+model tbTabColabCCusto {
+  idt_colab_ccusto Int      @id(clustered: false, map: "PK_tbTabColabCCusto") @default(autoincrement())
+  idt_colab        Int
+  cod_ccusto       String   @db.VarChar(12)
+  dat_inclusao     DateTime @default(now(), map: "DF_tbTabColabCCusto_dat_inclusao") @db.SmallDateTime
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model tbTabColabDepto {
+  idt_colab_depto Int      @id(clustered: false, map: "PK_tbTabColabDepto") @default(autoincrement())
+  idt_colab       Int
+  idt_depto       Int
+  dat_inclusao    DateTime @default(now(), map: "DF_tbTabColabDepto_dat_inclusao") @db.SmallDateTime
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model tbTabDepartamento {
+  idt_dept            Int     @id(clustered: false, map: "PK_tabDepartamento") @default(autoincrement())
+  cod_ccusto          String? @db.VarChar(12)
+  cod_lotacao_hr      String? @db.VarChar(12)
+  nom_dept            String? @db.NVarChar(80)
+  nom_sigla_dept      String? @db.NVarChar(12)
+  tip_dept            String? @db.NVarChar(1)
+  cod_nivel1          Int?    @default(0, map: "DF_tabDepartamento_cod_nivel1") @db.TinyInt
+  cod_nivel2          Int?    @default(0, map: "DF_tabDepartamento_cod_nivel2") @db.TinyInt
+  cod_nivel3          Int?    @default(0, map: "DF_tabDepartamento_cod_nivel3") @db.TinyInt
+  cod_nivel4          Int?    @default(0, map: "DF_tabDepartamento_cod_nivel4") @db.TinyInt
+  idt_diretoria       Int?    @default(0, map: "DF_tabDepartamento_idt_diretoria")
+  des_competencia     String? @db.VarChar(3000)
+  des_competencia2    String? @db.VarChar(1000)
+  idt_titular         Int?    @default(0, map: "DF_tabDepartamento_idt_titular")
+  cod_cresp           String? @db.Char(4)
+  flg_ativo_depto     Int?    @default(0, map: "DF_tabDepartamento_flg_ativo_depto") @db.TinyInt
+  cod_lotacao_dominio String? @db.VarChar(12)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model tbTabDeptoCCusto {
+  idt_depto_ccusto Int      @id(clustered: false, map: "PK_tbTabDeptoCCusto") @default(autoincrement())
+  idt_depto        Int
+  cod_ccusto       String   @db.VarChar(12)
+  dat_inclusao     DateTime @default(now(), map: "DF_tbTabDeptoCCusto_dat_inclusao") @db.SmallDateTime
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model tbTabDeptosCorrelacao {
+  idt_correlacao  Int @id(clustered: false, map: "PK_tbTabDeptosCorrelacao") @default(autoincrement())
+  idt_depto_velho Int @default(0, map: "DF_tbTabDeptosCorrelacao_idt_depto_velho")
+  idt_depto_novo  Int @default(0, map: "DF_tbTabDeptosCorrelacao_idt_depto_novo")
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model telCategoria {
+  idt_categoria Int     @id(clustered: false, map: "PK_telCategoria")
+  des_categoria String? @db.NVarChar(50)
+  tip_digital   Int?    @default(0, map: "DF_telCategoria_tip_digital")
+  tip_bloqueio  Int?    @default(0, map: "DF_telCategoria_tip_bloqueio")
+  tip_bina      Int?    @default(0, map: "DF_telCategoria_tip_bina")
+  cod_categoria String? @db.NVarChar(1)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model telCategoriaBina {
+  idt_bina Int     @id(clustered: false, map: "PK_telCategoriaBina") @db.SmallInt
+  des_bina String? @db.NVarChar(25)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model telCategoriaBloqueio {
+  idt_bloqueio Int     @id(clustered: false, map: "PK_telCategoriaBloqueio") @db.SmallInt
+  des_bloqueio String? @db.NVarChar(25)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model telCategoriaCodAut {
+  idt_codaut        Int     @id(clustered: false, map: "PK_telCategoriaCodAut")
+  des_codaut        String? @db.NVarChar(50)
+  tip_digital       Int?    @default(0, map: "DF_telCategoriaCodAut_tip_digital")
+  tip_bloqueio      Int?    @default(0, map: "DF_telCategoriaCodAut_tip_bloqueio")
+  tip_bina          Int?    @default(0, map: "DF_telCategoriaCodAut_tip_bina")
+  des_resumo_codaut String? @db.NVarChar(5)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model telCategoriaTipo {
+  idt_cat_tipo Int     @id(clustered: false, map: "PK_telCategoriaTipo") @db.SmallInt
+  des_cat_tipo String? @db.NVarChar(25)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model telConta {
+  idt_conta        Int       @id(clustered: false, map: "PK_telConta") @default(autoincrement())
+  num_ramal        Int?      @db.SmallInt
+  mes_conta        Int?      @db.TinyInt
+  ano_conta        Int?      @db.SmallInt
+  val_conta        Float?    @db.Real
+  val_ligfixo      Float?    @db.Real
+  dat_vencimento   DateTime? @db.SmallDateTime
+  dat_pagamento    DateTime? @db.SmallDateTime
+  idt_operadora    Int?      @default(0, map: "DF_telConta_idt_operadora")
+  idt_dept         Int?      @default(0, map: "DF_telConta_idt_dept")
+  idt_colab_atesto Int?      @default(0, map: "DF_telConta_idt_colab_atesto")
+  idt_colab_resp   Int?      @default(0, map: "DF_telConta_idt_colab_resp")
+  flg_semconta     Int       @default(0, map: "DF_telConta_flg_semconta") @db.SmallInt
+  cod_ccusto       String?   @db.VarChar(16)
+  dat_contabil     DateTime? @db.SmallDateTime
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model telContaTelefonica {
+  idt_conta        Int      @id(clustered: false, map: "PK_telContaTelefonica")
+  val_total_conta  Float    @default(0, map: "DF_telContaTelefonica_val_total_conta") @db.Real
+  dat_vencto_conta DateTime @db.SmallDateTime
+  dat_pagto_conta  DateTime @db.SmallDateTime
+  idt_operadora    Int
+  dat_contabil     DateTime @db.SmallDateTime
+  mes_conta        Int      @db.SmallInt
+  ano_conta        Int      @db.SmallInt
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model telContaTelefonicaItem {
+  idt_item         Int    @id(clustered: false, map: "PK_ContaTelefonicaItem") @default(autoincrement())
+  idt_conta        Int
+  idt_ramal        Int
+  val_total_item   Float  @default(0, map: "DF_ContaTelefonicaItem_val_total_item") @db.Real
+  cod_ccusto       String @db.VarChar(16)
+  idt_depto        Int
+  idt_colab_atesto Int
+  idt_colab_resp   Int
+  flg_semconta     Int    @default(0, map: "DF_ContaTelefonicaItem_flg_semconta") @db.SmallInt
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model telOperadora {
+  idt_operadora        Int     @id(clustered: false, map: "PK_telOperadora") @default(autoincrement())
+  nom_operadora        String? @db.NVarChar(25)
+  cod_ccontabil_fornec String? @db.NVarChar(16)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model telOutrosResponsaveis {
+  idt_outros Int     @id(clustered: false, map: "PK_telOutrosResponsaveis") @default(autoincrement())
+  nom_outros String? @db.NVarChar(50)
+  nom_area   String? @db.NVarChar(50)
+  idt_dept   Int?    @default(0, map: "DF_telOutrosResponsaveis_idt_dept")
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model telRamal {
+  idt_ramal           Int       @id(clustered: false, map: "PK_telRamal") @default(autoincrement())
+  num_prefixo         Int?      @default(370, map: "DF_telRamal_num_prefixo") @db.SmallInt
+  num_ramal           Int?      @db.SmallInt
+  cod_categoria       Int?      @default(0, map: "DF_telRamal_cod_categoria") @db.TinyInt
+  cod_categoria_senha Int?      @default(0, map: "DF_telRamal_cod_categoria_senha") @db.TinyInt
+  cod_ccusto          String?   @db.VarChar(16)
+  idt_dept            Int?      @default(0, map: "DF_telRamal_idt_dept")
+  idt_colab           Int?      @default(0, map: "DF_telRamal_idt_colab")
+  idt_colab_atesto    Int?      @default(0, map: "DF_telRamal_idt_colab_atesto")
+  des_observacoes     String?   @db.NVarChar(255)
+  idt_cat             Int?      @default(0, map: "DF_telRamal_idt_cat")
+  idt_digital         Int       @default(0, map: "DF_telRamal_flg_digital") @db.SmallInt
+  idt_bloqueio        Int       @default(0, map: "DF_telRamal_flg_bloqueio") @db.SmallInt
+  idt_bina            Int       @default(0, map: "DF_telRamal_flg_bina") @db.SmallInt
+  cod_cat             String?   @db.NVarChar(5)
+  idt_ativa           Int       @default(1, map: "DF_telRamal_flg_ativa") @db.SmallInt
+  idt_senha           Int       @default(0, map: "DF_telRamal_flg_senha") @db.SmallInt
+  idt_codaut          Int?      @default(0, map: "DF_telRamal_idt_codaut")
+  flg_caixa_mensagem  Int       @default(0, map: "DF_telRamal_flg_caixa_mensagem") @db.SmallInt
+  dat_inc_ramal       DateTime? @default(now(), map: "DF_telRamal_dat_inc_ramal") @db.DateTime
+
+  @@unique([num_prefixo, num_ramal], map: "IX_telRamal")
+  @@schema("bdcolaborador].[dbo")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model telRamalHistorico {
+  idt_ramal           Int
+  num_prefixo         Int?      @db.SmallInt
+  num_ramal           Int?      @db.SmallInt
+  cod_categoria       Int?      @db.TinyInt
+  cod_categoria_senha Int?      @db.TinyInt
+  cod_ccusto          String?   @db.VarChar(16)
+  idt_dept            Int?
+  idt_colab           Int?
+  idt_colab_atesto    Int?
+  des_observacoes     String?   @db.NVarChar(255)
+  idt_cat             Int?
+  idt_digital         Int       @db.SmallInt
+  idt_bloqueio        Int       @db.SmallInt
+  idt_bina            Int       @db.SmallInt
+  cod_cat             String?   @db.NVarChar(5)
+  dat_historico       DateTime? @db.SmallDateTime
+  idt_ativa           Int       @db.SmallInt
+  idt_senha           Int       @db.SmallInt
+  idt_codaut          Int?
+  flg_caixa_mensagem  Int?      @db.SmallInt
+  dat_inc_ramal       DateTime? @db.DateTime
+  dat_inc_hist_ramal  DateTime? @default(now(), map: "DF_telRamalHistorico_dat_inc_hist_ramal") @db.DateTime
+
+  @@ignore
+  @@schema("bdcolaborador].[dbo")
+}
+
+model Titular {
+  Idt_Titular                Int       @id(clustered: false, map: "PK_Titular") @default(autoincrement())
+  Nom_Curto_Titular          String?   @db.NVarChar(255)
+  Nom_Titular                String?   @db.NVarChar(255)
+  Num_empresa                String?   @db.NVarChar(5)
+  Dat_Admissao_Titular       DateTime? @db.SmallDateTime
+  Cod_Setor                  String?   @default("0", map: "DF_Titular_Cod_Setor") @db.NVarChar(10)
+  Tip_Sexo_Titular           String?   @default("0", map: "DF_Titular_Tip_Sexo_Titular") @db.NVarChar(255)
+  Tip_EstCivil_Titular       String?   @default("0", map: "DF_Titular_Tip_EstCivil_Titular") @db.NVarChar(255)
+  Cod_Mat_Titular            Float?
+  Cod_CPF_Titular            String?   @db.NVarChar(255)
+  Cod_Banco_Titular          String?   @db.NVarChar(255)
+  Cod_Agencia_Titular        String?   @db.NVarChar(255)
+  Cod_Digito_Agencia_Titular String?   @db.NVarChar(1)
+  Cod_CC_Titular             String?   @db.NVarChar(255)
+  Des_Endereco_Titular       String?   @db.NVarChar(255)
+  Cod_CEP_Titular            String?   @db.NVarChar(255)
+  Dat_Nasc_Titular           DateTime? @db.SmallDateTime
+  Tip_Opcao                  String?   @db.NVarChar(255)
+  Tip_Plano                  String?   @db.NVarChar(4)
+  Dat_Casamento_Titular      DateTime? @db.SmallDateTime
+  tip_processado             Boolean   @default(false, map: "DF_Titular_tip_processado")
+  tip_alteracao              Boolean   @default(false, map: "DF_Titular_tip_alteracao")
+  tip_exclusao_titular       Boolean   @default(false, map: "DF_Titular_tip_exclusao_titular")
+  dat_opcao_plano            String?   @db.NVarChar(8)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model vgmConsultor {
+  idt_consultor   Int     @id(clustered: false, map: "PK_vgmConsultor") @default(autoincrement())
+  nom_consultor   String? @db.NVarChar(30)
+  cod_rg          String? @db.NVarChar(25)
+  cod_banco       String? @db.NVarChar(3)
+  cod_num_agencia String? @db.NVarChar(5)
+  cod_dig_agencia String? @db.NVarChar(1)
+  cod_num_contac  String? @db.NVarChar(15)
+  cod_dig_contac  String? @db.NVarChar(1)
+  des_cargo       String? @db.NVarChar(25)
+  des_fone        String? @db.NVarChar(20)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model vgmItinerario {
+  idt_itinerario Int      @id(clustered: false, map: "PK_vgmItinerario") @default(autoincrement())
+  idt_viagem     Int
+  dat_itinerario DateTime @db.SmallDateTime
+  idt_origem     Int
+  idt_destino    Int
+  des_obs        String?  @db.VarChar(40)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model vgmItinerarioReal {
+  idt_itinerario Int      @id(clustered: false, map: "PK_vgmItinerarioReal") @default(autoincrement())
+  idt_viagem     Int
+  dat_itinerario DateTime @db.SmallDateTime
+  idt_origem     Int
+  idt_destino    Int
+  des_obs        String?  @db.VarChar(40)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model vgmNaturezaViagem {
+  idt_natureza Int    @default(autoincrement())
+  nom_natureza String @db.VarChar(21)
+
+  @@ignore
+  @@schema("bdcolaborador].[dbo")
+}
+
+model vgmOrigem_Recurso {
+  idt_origem Int     @id(clustered: false, map: "PK_vgmOrigem_Recurso") @default(autoincrement())
+  nom_origem String? @db.NVarChar(50)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model vgmResponsaveisViagem {
+  idt_resp     Int  @id(clustered: false, map: "PK_vmgResponsaveisViagem") @default(autoincrement())
+  idt_colab    Int
+  idt_dept     Int
+  idt_dept_ant Int? @default(0, map: "DF_vgmResponsaveisViagem_idt_dept_ant")
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model vgmResponsaveisViagemColab {
+  idt_resp           Int @id(map: "PK_vgmResponsaveisViagemColab") @default(autoincrement())
+  idt_colab_resp     Int
+  idt_colab_viajante Int
+  flg_exclusao       Int @default(0, map: "DF_vgmResponsaveisViagemColab_flg_exclusao") @db.SmallInt
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model vgmSolicitacao_Viagem {
+  idt_solic                      Int       @id(clustered: false, map: "PK_vgmSolicitacao_Viagem") @default(autoincrement())
+  dat_solic                      DateTime? @db.SmallDateTime
+  tip_solicitante                Int?      @default(0, map: "DF_vgmSolicitacao_Viagem_tip_solicitante") @db.TinyInt
+  idt_solicitante                Int?      @default(0, map: "DF_vgmSolicitacao_Viagem_idt_solicitante")
+  idt_cargo_solicitante          Int?      @default(0, map: "DF_vgmSolicitacao_Viagem_idt_cargo_solicitante")
+  dat_inicio_prevista            DateTime? @db.SmallDateTime
+  dat_fim_prevista               DateTime? @db.SmallDateTime
+  dat_provisao                   DateTime? @db.SmallDateTime
+  idt_provisionador              Int?      @default(0, map: "DF_vgmSolicitacao_Viagem_idt_provisionador")
+  dat_credito                    DateTime? @db.SmallDateTime
+  num_processo                   String?   @db.NVarChar(8)
+  des_solicitacao                String?   @db.NVarChar(600)
+  val_adiantamento               Float?    @default(0, map: "DF_vgmSolicitacao_Viagem_val_adiantamento") @db.Real
+  idt_origem_recurso             Int?      @default(0, map: "DF_vgmSolicitacao_Viagem_idt_origem_recurso")
+  val_diaria                     Float?    @default(0, map: "DF_vgmSolicitacao_Viagem_val_diaria") @db.Real
+  val_em_diarias                 Float?    @default(0, map: "DF_vgmSolicitacao_Viagem_val_em_diarias") @db.Real
+  val_total_diarias_adiantamento Float?    @default(0, map: "DF_vgmSolicitacao_Viagem_val_total_diarias_adiantamento") @db.Real
+  qtd_diarias                    Float?    @default(0, map: "DF_vgmSolicitacao_Viagem_qtd_diarias") @db.Real
+  val_gastos_passagens           Float?    @default(0, map: "DF_vgmSolicitacao_Viagem_val_gastos_passagens") @db.Real
+  val_outros_gastos              Float?    @default(0, map: "DF_vgmSolicitacao_Viagem_val_outros_gastos") @db.Real
+  des_destino                    String?   @db.NVarChar(30)
+  tip_destino                    Int?      @default(0, map: "DF_vgmSolicitacao_Viagem_tip_destino") @db.TinyInt
+  des_num_solicitacao            String?   @db.NVarChar(15)
+  flg_prcontas                   Boolean   @default(false, map: "DF_vgmSolicitacao_Viagem_flg_prcontas")
+  num_processo_diarias           String?   @db.NVarChar(8)
+  num_processo_passagem          String?   @db.NVarChar(8)
+  num_processo_outros            String?   @db.NVarChar(8)
+  tip_solic                      String?   @db.NVarChar(2)
+  dat_prcontas                   DateTime? @db.SmallDateTime
+  dat_inicio_real                DateTime? @db.SmallDateTime
+  dat_fim_real                   DateTime? @db.SmallDateTime
+  dat_aprov_dir_area             DateTime? @db.SmallDateTime
+  idt_diretor_aprov              Int?      @default(0, map: "DF_vgmSolicitacao_Viagem_idt_diretor_aprov")
+  dat_aprov_financ               DateTime? @db.SmallDateTime
+  idt_aprov_financ               Int?      @default(0, map: "DF_vgmSolicitacao_Viagem_idt_aprov_financ")
+  val_diarias_utilizado          Float?    @default(0, map: "DF_vgmSolicitacao_Viagem_val_diarias_utilizado") @db.Real
+  val_adiantamento_utilizado     Float?    @default(0, map: "DF_vgmSolicitacao_Viagem_val_adiantamento_utilizado") @db.Real
+  dat_fechamento_saldo           DateTime? @db.SmallDateTime
+  val_cambio                     Float?    @default(0, map: "DF_vgmSolicitacao_Viagem_val_cambio") @db.Real
+  val_gastos_treinamento         Float?    @default(0, map: "DF_vgmSolicitacao_Viagem_val_gastos_treinamento") @db.Real
+  cod_banco                      String?   @db.NVarChar(3)
+  cod_num_agencia                String?   @db.NVarChar(7)
+  cod_num_contac                 String?   @db.NVarChar(17)
+  nom_usuario_inc_sv             String?   @db.NVarChar(25)
+  nom_usuario_alt_sv             String?   @db.NVarChar(25)
+  nom_usuario_inc_pc             String?   @db.NVarChar(25)
+  dat_inclusao_sv                DateTime? @default(now(), map: "DF_vgmSolicitacao_Viagem_dat_inclusao_sv") @db.SmallDateTime
+  dat_alteracao_sv               DateTime? @db.SmallDateTime
+  dat_inclusao_pc                DateTime? @db.SmallDateTime
+  Val_Total_Efetivo              Float?    @default(0, map: "DF_vgmSolicitacao_Viagem_Val_Total_Efetivo") @db.Real
+  Val_diaria_Efetivo             Float?    @default(0, map: "DF_vgmSolicitacao_Viagem_Val_diaria_Efetivo") @db.Real
+  Val_saldo_diarias_Efetivo      Float?    @default(0, map: "DF_vgmSolicitacao_Viagem_Val_saldo_diarias_Efetivo") @db.Real
+  Val_saldo_adiantamento_Efetivo Float?    @default(0, map: "DF_vgmSolicitacao_Viagem_Val_saldo_adiantamento_Efetivo") @db.Real
+  Val_saldo_Total_Efetivo        Float?    @default(0, map: "DF_vgmSolicitacao_Viagem_Val_saldo_Total_Efetivo") @db.Real
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model vgmStatusViagem {
+  idt_status         Int     @id(clustered: false, map: "PK_VgmStatusViagem") @db.SmallInt
+  nom_status         String  @db.Char(25)
+  nom_arquivo_status String? @db.VarChar(100)
+  des_status         String? @db.VarChar(60)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model vgmTipoDiaria {
+  idt_tipodiaria Int    @id(clustered: false, map: "PK_vgmTipoDiaria")
+  nom_tipodiaria String @db.VarChar(50)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model vgmTipoViajante {
+  idt_tipoviajante Int     @id(clustered: false, map: "PK_vgmTipoViajante")
+  nom_tipoviajante String  @db.VarChar(50)
+  cod_tipoviajante String? @db.Char(1)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model vgmViagem {
+  idt_viagem                   Int       @id(clustered: false, map: "PK_vgmViagem") @default(autoincrement())
+  dat_solic                    DateTime? @default(now(), map: "DF_vgmViagem_dat_solic") @db.SmallDateTime
+  tip_solicitante              Int?      @db.TinyInt
+  idt_solicitante              Int?
+  idt_cargo_solicitante        Int?
+  dat_inicio_prevista          DateTime? @db.SmallDateTime
+  dat_fim_prevista             DateTime? @db.SmallDateTime
+  des_solicitacao              String?   @db.NVarChar(3000)
+  des_obs_solicitacao          String?   @db.VarChar(3000)
+  val_adiantamento             Float?    @default(0, map: "DF_vgmViagem_val_adiantamento") @db.Real
+  idt_origem_recurso           Int?      @default(0, map: "DF_vgmViagem_idt_origem_recurso")
+  val_diaria                   Float?    @default(0, map: "DF_vgmViagem_val_diaria") @db.Real
+  val_em_diarias               Float?    @default(0, map: "DF_vgmViagem_val_em_diarias") @db.Real
+  qtd_diarias                  Float?    @default(0, map: "DF_vgmViagem_qtd_diarias") @db.Real
+  tip_destino                  Int?      @db.TinyInt
+  flg_prcontas                 Int       @default(0, map: "DF_vgmViagem_flg_prcontas") @db.SmallInt
+  dat_prcontas                 DateTime? @db.SmallDateTime
+  dat_inicio_prcontas          DateTime? @db.SmallDateTime
+  dat_fim_prcontas             DateTime? @db.SmallDateTime
+  val_diarias_prcontas         Float?    @default(0, map: "DF_vgmViagem_val_diarias_utilizado") @db.Real
+  val_adiantamento_prcontas    Float?    @default(0, map: "DF_vgmViagem_val_adiantamento_utilizado") @db.Real
+  val_cambio                   Float?    @default(0, map: "DF_vgmViagem_val_cambio") @db.Real
+  qtd_diarias_prcontas         Float?    @db.Real
+  val_passagens_prcontas       Float?    @db.Real
+  val_translado_prcontas       Float?    @db.Real
+  val_transpurbano_prcontas    Float?    @db.Real
+  val_telefone_prcontas        Float?    @db.Real
+  qtd_doc_prcontas             Int?      @db.SmallInt
+  des_prcontas                 String?   @db.VarChar(500)
+  cod_banco                    String?   @db.NVarChar(3)
+  cod_num_agencia              String?   @db.NVarChar(7)
+  cod_num_contac               String?   @db.NVarChar(20)
+  nom_usuario_inc_sv           String?   @db.NVarChar(25)
+  nom_usuario_alt_sv           String?   @db.NVarChar(25)
+  nom_usuario_inc_pc           String?   @db.NVarChar(25)
+  dat_inclusao_sv              DateTime? @default(now(), map: "DF_vgmViagem_dat_inclusao_sv") @db.SmallDateTime
+  dat_alteracao_sv             DateTime? @db.SmallDateTime
+  dat_inclusao_pc              DateTime? @db.SmallDateTime
+  idt_natureza_viagem          Int?
+  nom_comp_passagem            String?   @db.Char(15)
+  cod_reserva_passagem         String?   @db.Char(15)
+  flg_diaria_especial          Int?      @default(0, map: "DF_vgmViagem_flg_diaria_padrao") @db.SmallInt
+  flg_diaria_especial_prcontas Int?      @default(0, map: "DF_vgmViagem_flg_diaria_especial_prcontas") @db.SmallInt
+  nom_outros1                  String?   @db.VarChar(20)
+  val_outros1                  Float?    @default(0, map: "DF_vgmViagem_val_outros1") @db.Real
+  nom_outros2                  String?   @db.VarChar(20)
+  val_outros2                  Float?    @default(0, map: "DF_vgmViagem_val_outros2") @db.Real
+  nom_outros3                  String?   @db.VarChar(20)
+  val_outros3                  Float?    @default(0, map: "DF_vgmViagem_val_outros3") @db.Real
+  nom_outros4                  String?   @db.VarChar(20)
+  val_outros4                  Float?    @default(0, map: "DF_vgmViagem_val_outros4") @db.Real
+  flg_status_viagem            Int?      @default(0, map: "DF_vgmViagem_flg_status_viagem") @db.SmallInt
+  idt_dept_viagem              Int       @default(0, map: "DF_vgmViagem_idt_dept_viagem")
+  idt_reserva_passagem         Int       @default(0, map: "DF_vgmViagem_idt_reserva_passagem") @db.SmallInt
+  idt_moeda                    Int?      @default(1, map: "DF_vgmViagem_idt_moeda")
+  flg_teste                    Int?
+  cod_ccusto                   String?   @db.VarChar(16)
+  cod_processo_svg             String?   @db.Char(8)
+  tip_doc_svg                  String?   @db.Char(3)
+  dat_pagto_svg                DateTime? @db.SmallDateTime
+  val_pagto_svg                Float?    @default(0, map: "DF_vgmViagem_val_pagto_svg") @db.Real
+  cod_processo_prc             String?   @db.Char(8)
+  tip_doc_prc                  String?   @db.Char(3)
+  dat_pagto_prc                DateTime? @db.SmallDateTime
+  val_pagto_prc                Float?    @default(0, map: "DF_vgmViagem_val_pagto_prc") @db.Real
+  idt_processo                 Int?
+  cod_cresp                    String?   @db.Char(4)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model vgmViagemAlterStatus {
+  idt_alter             Int      @id(map: "PK_vgmViagemAlterStatus") @default(autoincrement())
+  idt_viagem            Int
+  flg_status_viagem_ant Int      @default(0, map: "DF_vgmViagemAlterStatus_flg_status_viagem_ant") @db.SmallInt
+  flg_status_viagem_pos Int      @default(0, map: "DF_vgmViagemAlterStatus_flg_status_viagem_pos") @db.SmallInt
+  nom_usuario           String?  @db.NVarChar(25)
+  dat_alter_inclusao    DateTime @default(now(), map: "DF_vgmViagemAlterStatus_dat_alter_inclusao") @db.SmallDateTime
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model vgmViagemDiariaEspecial {
+  idt_diaria         Int      @id(clustered: false, map: "PK_vgmViagemDiariaEspecial") @default(autoincrement())
+  idt_viagem         Int
+  dat_diaria_inicial DateTime @db.SmallDateTime
+  dat_diaria_final   DateTime @db.SmallDateTime
+  val_diaria         Float    @db.Real
+  des_obs            String?  @db.VarChar(40)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model vgmViagemDiariaEspecialReal {
+  idt_diaria         Int      @id(clustered: false, map: "PK_vgmViagemDiariaEspecialReal") @default(autoincrement())
+  idt_viagem         Int
+  dat_diaria_inicial DateTime @db.SmallDateTime
+  dat_diaria_final   DateTime @db.SmallDateTime
+  val_diaria         Float    @db.Real
+  des_obs            String?  @db.VarChar(40)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model vgmViagemTrecho {
+  idt_trecho        Int      @id(clustered: false, map: "PK_vgmViagemTrecho") @default(autoincrement())
+  idt_viagem        Int      @default(0, map: "DF_vgmViagemTrecho_idt_viagem")
+  dat_inicio_trecho DateTime @db.SmallDateTime
+  dat_fim_trecho    DateTime @db.SmallDateTime
+  val_diaria        Float    @default(0, map: "DF_vgmViagemTrecho_val_diaria") @db.Real
+  qtd_diarias       Float?   @db.Real
+  des_obs           String?  @db.VarChar(50)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model vgmViagemTrechoReal {
+  idt_trecho        Int      @default(autoincrement())
+  idt_viagem        Int
+  dat_inicio_trecho DateTime @db.SmallDateTime
+  dat_fim_trecho    DateTime @db.SmallDateTime
+  val_diaria        Float    @db.Real
+  qtd_diarias       Float?   @db.Real
+  des_obs           String?  @db.VarChar(50)
+
+  @@ignore
+  @@schema("bdcolaborador].[dbo")
+}
+
+model vgmViajanteCentroCusto {
+  idt_viajcc Int     @id(clustered: false, map: "PK_vgmViajenteCentroCusto") @default(autoincrement())
+  idt_colab  Int
+  idt_centro Int
+  cod_ccusto String? @db.VarChar(16)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model xerAutorizador {
+  idt_autorizador Int @id(clustered: false, map: "PK_xerAutorizador") @default(autoincrement())
+  idt_colab       Int
+  cod_autorizador Int @db.SmallInt
+  flg_autorizador Int @default(1, map: "DF_xerAutorizador_flg_autorizador") @db.SmallInt
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model xerPeriodoApuracao {
+  idt_apuracao        Int      @id(clustered: false, map: "PK_xerPeriodoApuracao") @default(autoincrement())
+  dat_inicio_apuracao DateTime @db.SmallDateTime
+  dat_fim_apuracao    DateTime @db.SmallDateTime
+  flg_apuracao        Boolean  @default(false, map: "DF_xerPeriodoApuracao_flg_apuracao")
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model xerRequisicao {
+  idt_requisicao     Int      @id(clustered: false, map: "PK_xerRequisicao") @default(autoincrement())
+  dat_requisicao     DateTime @db.SmallDateTime
+  idt_ccusto         Int?
+  cod_ccusto         String   @db.VarChar(12)
+  idt_autorizador    Int
+  dat_entrega        DateTime @db.SmallDateTime
+  dat_inc_requisicao DateTime @default(now(), map: "DF_xerRequisicao_dat_inc_requisicao") @db.SmallDateTime
+  flg_status         Int?     @default(1, map: "DF_xerRequisicao_flg_status") @db.SmallInt
+  idt_inc_usuario    Int?     @default(0, map: "DF_xerRequisicao_idt_inc_usuario")
+  idt_exc_usuario    Int?     @default(0, map: "DF_xerRequisicao_idt_exc_usuario")
+  idt_apuracao       Int?     @default(0, map: "DF_xerRequisicao_idt_apuracao")
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model xerRequisicaoItem {
+  idt_reqitem    Int @id(clustered: false, map: "PK_xerRequisicaoItem") @default(autoincrement())
+  idt_requisicao Int
+  num_item       Int @default(0, map: "DF_xerRequisicaoItem_num_item") @db.SmallInt
+  idt_servico    Int @default(0, map: "DF_xerRequisicaoItem_tip_cor")
+  idt_montagem   Int @default(0, map: "DF_xerRequisicaoItem_tip_montagem")
+  idt_formato    Int @default(0, map: "DF_xerRequisicaoItem_tip_formato")
+  qtd_original   Int @default(0, map: "DF_xerRequisicaoItem_qtd_original")
+  qtd_copia      Int @default(0, map: "DF_xerRequisicaoItem_qtd_copia")
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model xerTipoFormato {
+  idt_forma Int    @id(clustered: false, map: "PK_xerTipoFormato") @default(autoincrement())
+  nom_forma String @db.VarChar(9)
+  cod_forma String @db.Char(1)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model xerTipoMontagem {
+  idt_montag Int    @id(clustered: false, map: "PK_xerTipoMontagem") @default(autoincrement())
+  nom_montag String @db.VarChar(11)
+  cod_montag String @db.Char(1)
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model xerTipoServico {
+  idt_serv           Int    @id(clustered: false, map: "PK_xerTipoServico") @default(autoincrement())
+  nom_serv           String @db.VarChar(15)
+  cod_serv           String @db.Char(1)
+  val_servico_fornec Float? @db.Real
+  val_servico_proj   Float  @default(0, map: "DF_xerTipoServico_val_servico") @db.Real
+  val_servico_flem   Float? @default(0, map: "DF_xerTipoServico_val_servico_flem") @db.Real
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+model xerTipoServicoCCusto {
+  idt_serv_ccusto Int     @id(clustered: false, map: "PK_xerCCustoServico") @default(autoincrement())
+  idt_ccusto      Int?    @default(0, map: "DF_xerCCustoServico_idt_ccusto")
+  cod_ccusto      String? @db.VarChar(12)
+  idt_serv        Int     @default(0, map: "DF_xerCCustoServico_idt_serv")
+  val_servico     Float   @default(0, map: "DF_xerCCustoServico_val_servico") @db.Real
+
+  @@schema("bdcolaborador].[dbo")
+}
+
+
+model Credor_Outros {
+  idt_credor Int        @id(clustered: false, map: "PK_Credor_Outros")
+  nom_credor String     @db.VarChar(50)
+  Processo   Processo[]
+
+@@schema("BDControleProcesso].[dbo")
+}
+
+model Empresa {
+  idt_emp Int     @id(map: "PK_Empresa") @default(autoincrement())
+  nom_emp String? @db.NVarChar(40)
+
+@@schema("BDControleProcesso].[dbo")
+}
+
+model errLog {
+  idt_log     Int      @id(clustered: false, map: "PK_errLog") @default(autoincrement())
+  idt_usuario Int
+  nom_usuario String   @db.VarChar(30)
+  des_msg     String   @db.VarChar(200)
+  dat_log     DateTime @default(now(), map: "DF_errLog_dat_log") @db.SmallDateTime
+
+@@schema("BDControleProcesso].[dbo")
+}
+
+model Fonte_Recursos {
+  idt_fonte Int     @id(clustered: false, map: "PK_Fonte_Recursos") @default(autoincrement())
+  des_fonte String? @db.NVarChar(40)
+
+@@schema("BDControleProcesso].[dbo")
+}
+
+model LocalArquivo {
+  idt_local_arquivo Int     @id(clustered: false, map: "PK_LocalArquivo") @default(autoincrement())
+  des_local_arquivo String? @db.NVarChar(50)
+
+@@schema("BDControleProcesso].[dbo")
+}
+
+model Modalidade_Processo {
+  idt_modalidade Int     @id(clustered: false, map: "PK_Modalidade_Processo") @db.TinyInt
+  des_modalidade String? @db.NVarChar(40)
+
+@@schema("BDControleProcesso].[dbo")
+}
+
+model Natureza_Processo {
+  idt_natureza Int     @id(clustered: false, map: "PK_Natureza_Processo") @default(autoincrement())
+  des_natureza String? @db.NVarChar(40)
+
+@@schema("BDControleProcesso].[dbo")
+}
+
+model Parametros {
+  num_processo_ultimo     Int    @id(clustered: false, map: "PK_Parametros") @default(autoincrement())
+  ano_processo_ultimo     Int?   @db.SmallInt
+  num_processo_ultimo2000 Int?
+  ano_processo_ultimo2000 Int?   @db.SmallInt
+  num_processo_ultimo2001 Int?
+  ano_processo_ultimo2001 Int?   @db.SmallInt
+  val_margem_superior     Float? @db.Real
+  val_margem_lateral      Float? @db.Real
+  val_altura_etiqueta     Float? @db.Real
+  val_largura_etiqueta    Float? @db.Real
+  qtd_etiqueta_linha      Int?   @db.TinyInt
+  qtd_linhas_pagina       Int?   @db.TinyInt
+  val_dist_vertical       Float? @db.Real
+  val_dist_horizontal     Float? @db.Real
+  val_ultima_etiqueta     Int?
+  num_processo_ultimo2004 Int?
+  ano_processo_ultimo2004 Int?   @db.SmallInt
+
+@@schema("BDControleProcesso].[dbo")
+}
+
+model prcAcessoEspecial {
+  idt_acesso Int @id(clustered: false, map: "PK_prcAcessoEspecial") @default(autoincrement())
+  idt_colab  Int
+
+@@schema("BDControleProcesso].[dbo")
+}
+
+model prcDocDigital {
+  idt_docdigital     Int       @id(clustered: false, map: "PK_prcDocDigital") @default(autoincrement())
+  idt_processo       Int
+  idt_tip_docdigital Int?
+  idt_tip_face       Int?
+  des_docdigital     String?   @db.VarChar(65)
+  dat_docdigital     DateTime  @db.SmallDateTime
+  num_pagina         Int       @default(0, map: "DF_prcDocDigital_num_pagina") @db.SmallInt
+  nom_arquivo        String    @db.VarChar(50)
+  nom_local          String    @db.VarChar(50)
+  dat_inclusao       DateTime  @default(now(), map: "DF_prcDocDigital_dat_inc_docdigital") @db.SmallDateTime
+  num_hor_pag        Int       @default(1, map: "DF_prcDocDigital_num_hor_pag") @db.SmallInt
+  num_hor_max        Int       @default(1, map: "DF_prcDocDigital_num_hor_max") @db.SmallInt
+  num_ver_pag        Int       @default(1, map: "DF_prcDocDigital_num_ver_pag") @db.SmallInt
+  num_ver_max        Int       @default(1, map: "DF_prcDocDigital_num_ver_max") @db.SmallInt
+  nom_usuario_inc    String?   @db.VarChar(20)
+  flg_exclusao       Int       @default(0, map: "DF_prcDocDigital_flg_exclusao") @db.TinyInt
+  dat_exclusao       DateTime? @db.SmallDateTime
+  nom_usuario_exc    String?   @db.VarChar(20)
+  dat_ult_alteracao  DateTime? @db.SmallDateTime
+  nom_usuario_alt    String?   @db.VarChar(20)
+  Processo           Processo  @relation(fields: [idt_processo], references: [idt_processo], onUpdate: NoAction, map: "FK_prcDocDigital_processo")
+
+@@schema("BDControleProcesso].[dbo")
+}
+
+model prcTipoDocDigital {
+  idt_tip_docdigital Int    @id(clustered: false, map: "PK_prcTipoDocDigital2") @default(autoincrement())
+  nom_tip_docdigital String @db.VarChar(25)
+  flg_administrativo String @default("0", map: "DF_prcTipoDocDigital2_flg_administrativo") @db.Char(1)
+  flg_financeiro     String @default("0", map: "DF_prcTipoDocDigital2_flg_financeiro") @db.Char(1)
+
+@@schema("BDControleProcesso].[dbo")
+}
+
+model prcTipoDocDigitalAnterior {
+  idt_tip_docdigital Int    @id(clustered: false, map: "PK_prcTipoDocDigital") @default(autoincrement())
+  nom_tip_docdigital String @db.VarChar(25)
+
+@@schema("BDControleProcesso].[dbo")
+}
+
+model prcTipoFaceDocDigital {
+  idt_tip_face Int    @id(clustered: false, map: "PK_prcTipoFaceDocDigital") @default(autoincrement())
+  nom_tip_face String @db.VarChar(10)
+
+@@schema("BDControleProcesso].[dbo")
+}
+
+model prcTipoProcesso {
+  idt_tipo Int    @id(clustered: false, map: "PK_prcTipoProcesso") @default(autoincrement())
+  nom_tipo String @db.VarChar(25)
+
+@@schema("BDControleProcesso].[dbo")
+}
+
+model Processo {
+  idt_processo             Int               @id(clustered: false, map: "PK_Processo") @default(autoincrement())
+  num_processo             Int?              @db.SmallInt
+  ano_processo             Int?              @db.SmallInt
+  cod_complemento          String?           @db.NVarChar(1)
+  num_complemento          Int?              @db.TinyInt
+  cod_complemento_old      String?           @db.NVarChar(1)
+  des_assunto              String?           @db.NVarChar(80)
+  idt_autor                Int?              @default(0, map: "DF_Processo_idt_autor")
+  idt_interessado          Int?              @default(0, map: "DF_Processo_idt_interessado")
+  idt_contratada           Int?              @default(0, map: "DF_Processo_idt_contratada")
+  idt_modalidade           Int?              @default(0, map: "DF_Processo_idt_modalidade") @db.TinyInt
+  dat_abertura             DateTime?         @db.SmallDateTime
+  idt_pessoa_andamento     DateTime?         @default(dbgenerated("0"), map: "DF_Processo_idt_pessoa_andamento") @db.SmallDateTime
+  dat_envio                DateTime?         @db.SmallDateTime
+  des_local_arquivamento   String?           @db.NVarChar(20)
+  idt_local_arquivo        Int?              @default(0, map: "DF_Processo_idt_local_arquivo")
+  dat_arquivamento         DateTime?         @db.SmallDateTime
+  flg_arquivamento         Boolean           @default(false, map: "DF_Processo_flg_arquivamento")
+  idt_usuario_arquivamento Int?              @default(0, map: "DF_Processo_idt_usuario_arquivamento")
+  idt_natureza             Int?              @default(0, map: "DF_Processo_idt_natureza")
+  des_parecer              String?           @db.VarChar(1000)
+  val_estimado             Float?            @default(0, map: "DF_Processo_val_estimado") @db.Real
+  val_provisao             Float?            @default(0, map: "DF_Processo_val_provisao") @db.Real
+  val_real                 Float?            @default(0, map: "DF_Processo_val_real") @db.Real
+  idt_status               Int?              @default(0, map: "DF_Processo_idt_status")
+  num_processo_str         String?           @unique(map: "idx_num_processo_str") @db.NVarChar(15)
+  idt_fonte                Int?              @default(0, map: "DF_Processo_idt_fonte")
+  idt_derivado             Int?              @default(0, map: "DF_Processo_idt_derivado")
+  flg_provisao             Boolean           @default(false, map: "DF_Processo_flg_provisao")
+  num_pag_docdigital       Int?              @default(0, map: "DF_Processo_num_pag_docdigital") @db.SmallInt
+  idt_tipo_credor          Int?
+  idt_credor_empresa       Int?
+  idt_credor_pessoa        BigInt?
+  idt_credor_colaborador   Int?
+  idt_credor_outros        Int?
+  idt_fonte_recurso        String?           @db.VarChar(30)
+  idt_responsabilidade     Int?
+  cod_cresp                String?           @db.Char(4)
+  idt_credor_proc          Int?
+  prcDocDigital            prcDocDigital[]
+  Credor_Outros            Credor_Outros?    @relation(fields: [idt_credor_outros], references: [idt_credor], onDelete: NoAction, onUpdate: NoAction, map: "FK_Processo_Credor_Outros")
+  Tipo_Credor              Tipo_Credor?      @relation(fields: [idt_tipo_credor], references: [idt_Tipo_Credor], onDelete: NoAction, onUpdate: NoAction, map: "FK_Processo_Tipo_Credor")
+  ProcessoTramite          ProcessoTramite[]
+
+  @@index([ano_processo], map: "idx_ano_processo")
+  @@index([idt_credor_colaborador], map: "IDX_Credor_Colaborador")
+  @@index([idt_credor_empresa], map: "IDX_Credor_Empresa")
+  @@index([idt_credor_outros], map: "IDX_Credor_Outros")
+  @@index([idt_credor_pessoa], map: "IDX_Credor_Pessoa")
+  @@index([idt_fonte_recurso], map: "IDX_Fonte_Recurso")
+  @@index([num_processo], map: "idx_num_processo")
+  @@index([idt_contratada], map: "IX_Processo_01")
+  @@index([idt_modalidade], map: "IX_Processo_02")
+  @@index([idt_derivado], map: "IX_Processo_03")
+  @@index([idt_natureza], map: "IX_Processo_04")
+  @@index([idt_status], map: "IX_Processo_05")
+  @@index([idt_fonte], map: "IX_Processo_06")
+
+@@schema("BDControleProcesso].[dbo")
+}
+
+model ProcessoTramite {
+  idt_tramite          Int       @id(clustered: false, map: "PK_ProcessoTramite") @default(autoincrement())
+  idt_processo         Int?      @default(0, map: "DF_ProcessoTramite_idt_processo")
+  dat_envio            DateTime? @default(now(), map: "DF_ProcessoTramite_dat_envio") @db.SmallDateTime
+  idt_remetente        Int?      @default(0, map: "DF_ProcessoTramite_idt_remetente")
+  idt_depto_remetente  Int?      @default(0, map: "DF_ProcessoTramite_idt_depto_remetente")
+  idt_depto_destino    Int?      @default(0, map: "DF_ProcessoTramite_idt_depto_destino")
+  flg_recebido         Boolean   @default(false, map: "DF_ProcessoTramite_flg_recebido")
+  dat_recebido         DateTime? @db.SmallDateTime
+  idt_usuario_recebido Int?      @default(0, map: "DF_ProcessoTramite_idt_usuario_recebido")
+  idt_depto_recebido   Int?      @default(0, map: "DF_ProcessoTramite_idt_depto_recebido")
+  flg_ultimo_tramite   Boolean   @default(true, map: "DF_ProcessoTramite_flg_ultimo_tramite")
+  num_caixa_arquivo    String?   @db.VarChar(8)
+  flg_teste            Int?      @default(0, map: "DF_ProcessoTramite_flg_teste") @db.SmallInt
+  Processo             Processo? @relation(fields: [idt_processo], references: [idt_processo], onDelete: NoAction, onUpdate: NoAction, map: "FK_ProcessoTramite_Processo")
+
+@@schema("BDControleProcesso].[dbo")
+}
+
+model Relacao {
+  idt_relacao Int     @id(clustered: false, map: "PK_Relacao") @default(autoincrement())
+  des_relacao String? @db.NVarChar(40)
+
+@@schema("BDControleProcesso].[dbo")
+}
+
+model Seq_Processo {
+  Chave String  @id(clustered: false, map: "PK_Seq_Processo") @db.VarChar(4)
+  Valor Decimal @db.Decimal(9, 0)
+
+@@schema("BDControleProcesso].[dbo")
+}
+
+model Status_Processo {
+  idt_status Int     @id(clustered: false, map: "PK_Status_Processo") @db.TinyInt
+  des_status String? @db.NVarChar(40)
+
+@@schema("BDControleProcesso].[dbo")
+}
+
+model Tipo_Credor {
+  idt_Tipo_Credor Int        @id(clustered: false, map: "PK_Tipo_Credor")
+  des_Tipo_Credor String     @db.VarChar(20)
+  Processo        Processo[]
+
+@@schema("BDControleProcesso].[dbo")
+}
+
+model Usuarios {
+  idt_usuario     Int     @id(clustered: false, map: "PK_Usuarios") @default(autoincrement())
+  nom_usuario     String? @db.NVarChar(12)
+  des_senha       String? @db.NVarChar(50)
+  des_privilegios String? @db.NVarChar(50)
+
+@@schema("BDControleProcesso].[dbo")
+}

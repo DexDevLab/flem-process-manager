@@ -1,0 +1,122 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model Cadastros_Tipos_Aditivo {
+  id        String      @id @default(cuid())
+  nome      String      @unique
+  excluido  Boolean     @default(false)
+  createdBy String      @default("SISTEMA")
+  updatedBy String      @default("SISTEMA")
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  processos Processos[]
+}
+
+model Cadastros_Tipos_Atividades {
+  id        String      @id @default(cuid())
+  nome      String      @unique
+  excluido  Boolean     @default(false)
+  createdBy String      @default("SISTEMA")
+  updatedBy String      @default("SISTEMA")
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  processos Processos[]
+}
+
+model Cadastros_Tipos_Formalizacoes {
+  id        String      @id @default(cuid())
+  nome      String      @unique
+  excluido  Boolean     @default(false)
+  createdBy String      @default("SISTEMA")
+  updatedBy String      @default("SISTEMA")
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  processos Processos[]
+}
+
+model Cadastros_Tipos_Parecer {
+  id        String      @id @default(cuid())
+  nome      String      @unique
+  excluido  Boolean     @default(false)
+  createdBy String      @default("SISTEMA")
+  updatedBy String      @default("SISTEMA")
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  processos Processos[]
+}
+
+model Cadastros_Tecnicos {
+  id        String      @id @default(cuid())
+  nome      String      @unique
+  matricula Int
+  excluido  Boolean     @default(false)
+  createdBy String      @default("SISTEMA")
+  updatedBy String      @default("SISTEMA")
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  processos Processos[]
+}
+
+model Cadastros_Subscritores {
+  id        String      @id @default(cuid())
+  nome      String      @unique
+  matricula Int
+  excluido  Boolean     @default(false)
+  createdBy String      @default("SISTEMA")
+  updatedBy String      @default("SISTEMA")
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  processos Processos[]
+}
+
+model Cadastros_Demandantes {
+  id        String      @id @default(cuid())
+  nome      String      @unique
+  excluido  Boolean     @default(false)
+  createdBy String      @default("SISTEMA")
+  updatedBy String      @default("SISTEMA")
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  processos Processos[]
+}
+
+model Processos {
+  id                              String                         @id @default(cuid())
+  dataEntrada                     DateTime
+  dataSaida                       DateTime?
+  protocolo                       String
+  numSD                           String
+  numRC                           String
+  projSetor                       String
+  numProcesso                     String
+  numParecer                      String
+  objeto                          String
+  fornecedor                      String
+  numContrato                     String?
+  valor                           String
+  excluido                        Boolean                        @default(false)
+  cadastros_TecnicosId            String
+  cadastros_Tipos_AditivoId       String?
+  cadastros_Tipos_AtividadesId    String
+  cadastros_Tipos_FormalizacoesId String
+  cadastros_Tipos_ParecerId       String
+  cadastros_SubscritoresId        String?
+  cadastros_DemandantesId         String
+  createdBy                       String                         @default("SISTEMA")
+  updatedBy                       String                         @default("SISTEMA")
+  createdAt                       DateTime                       @default(now())
+  updatedAt                       DateTime                       @updatedAt
+  Cadastros_Tecnicos              Cadastros_Tecnicos?            @relation(fields: [cadastros_TecnicosId], references: [id])
+  Cadastros_Tipos_Aditivo         Cadastros_Tipos_Aditivo?       @relation(fields: [cadastros_Tipos_AditivoId], references: [id])
+  Cadastros_Tipos_Atividades      Cadastros_Tipos_Atividades?    @relation(fields: [cadastros_Tipos_AtividadesId], references: [id])
+  Cadastros_Tipos_Formalizacoes   Cadastros_Tipos_Formalizacoes? @relation(fields: [cadastros_Tipos_FormalizacoesId], references: [id])
+  Cadastros_Tipos_Parecer         Cadastros_Tipos_Parecer?       @relation(fields: [cadastros_Tipos_ParecerId], references: [id])
+  Cadastros_Subscritores          Cadastros_Subscritores?        @relation(fields: [cadastros_SubscritoresId], references: [id])
+  Cadastros_Demandantes           Cadastros_Demandantes?         @relation(fields: [cadastros_DemandantesId], references: [id])
+}
